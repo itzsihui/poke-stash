@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 
 interface TelegramUser {
   id: number;
@@ -37,79 +36,46 @@ export const useTelegramAuth = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const initTelegram = async () => {
-      // Check if running in Telegram WebApp
-      if (window.Telegram?.WebApp) {
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
+    const init = () => {
+      try {
+        // Prefer Telegram WebApp user if present
+        if (window.Telegram?.WebApp) {
+          const tg = window.Telegram.WebApp;
+          tg.ready?.();
+          tg.expand?.();
 
-        const user = tg.initDataUnsafe.user;
-        
-        if (user) {
-          setTelegramUser(user);
-
-          // Create or update profile in database
-          const { error } = await supabase
-            .from("profiles")
-            .upsert([
-              {
-                telegram_id: user.id.toString(),
-                telegram_username: user.username || user.first_name,
-              },
-            ], {
-              onConflict: 'telegram_id'
-            });
-
-          if (error) {
-            console.error("Error upserting profile:", error);
+          const user = tg.initDataUnsafe?.user;
+          if (user?.id) {
+            setTelegramUser(user as TelegramUser);
+            setIsLoading(false);
+            return;
           }
-        } else {
-          // For development: use mock data
-          const mockUser = {
-            id: 123456789,
-            first_name: "Dev",
-            username: "devuser",
-          };
-          setTelegramUser(mockUser);
-
-          // Create mock profile
-          await supabase
-            .from("profiles")
-            .upsert([
-              {
-                telegram_id: mockUser.id.toString(),
-                telegram_username: mockUser.username,
-              },
-            ], {
-              onConflict: 'telegram_id'
-            });
         }
-      } else {
-        // Development fallback
-        const mockUser = {
-          id: 123456789,
-          first_name: "Dev",
-          username: "devuser",
+
+        // Fallback: per-device guest ID so each device/user is isolated for the demo
+        const stored = localStorage.getItem("guest_telegram_id");
+        let guestId = stored ?? "";
+        if (!guestId) {
+          const rand = Math.floor(Math.random() * 1_000_000);
+          guestId = `${Date.now()}${rand}`;
+          localStorage.setItem("guest_telegram_id", guestId);
+        }
+
+        const mockUser: TelegramUser = {
+          // keep within safe integer range while satisfying the number type
+          id: Number(guestId.slice(-9)),
+          first_name: "Guest",
+          username: `guest_${guestId.slice(-4)}`,
         };
         setTelegramUser(mockUser);
-
-        await supabase
-          .from("profiles")
-          .upsert([
-            {
-              telegram_id: mockUser.id.toString(),
-              telegram_username: mockUser.username,
-            },
-          ], {
-            onConflict: 'telegram_id'
-          });
+      } catch (e) {
+        console.error("Auth init error:", e);
+      } finally {
+        setIsLoading(false);
       }
-
-      setIsLoading(false);
     };
 
-    initTelegram();
+    init();
   }, []);
 
   return {
