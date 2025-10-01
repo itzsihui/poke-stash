@@ -8,6 +8,7 @@ import { AssetPreloader } from "@/components/AssetPreloader";
 import Index from "./pages/Index";
 import Inventory from "./pages/Inventory";
 import Admin from "./pages/Admin";
+import AdminVideoGenerator from "./pages/AdminVideoGenerator";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -30,6 +31,7 @@ const App = () => {
             <Route path="/" element={<Index />} />
             <Route path="/inventory" element={<Inventory />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/video-generator" element={<AdminVideoGenerator />} />
             <Route path="/auth" element={<Auth />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
