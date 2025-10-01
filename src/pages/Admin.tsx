@@ -109,9 +109,16 @@ const Admin = () => {
       <Navbar />
       <div className="container mx-auto px-4 py-8">
         <div className="space-y-8">
-          <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-            Admin Dashboard
-          </h1>
+          <div className="space-y-4">
+            <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              Admin Dashboard
+            </h1>
+            <div className="bg-muted/50 border border-border rounded-lg p-4">
+              <p className="text-sm text-muted-foreground">
+                For demo purposes, this is made public, but this will only be available to... you guessed it... admins
+              </p>
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card className="bg-gradient-card border-border">
