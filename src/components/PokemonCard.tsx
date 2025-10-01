@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { RarityBadge } from "./RarityBadge";
+import { resolveCardImage } from "@/lib/imageResolver";
 
 interface PokemonCardProps {
   name: string;
@@ -25,7 +26,7 @@ export const PokemonCard = ({
     >
       <div className="relative aspect-[3/4] overflow-hidden">
         <img
-          src={imageUrl}
+          src={resolveCardImage(imageUrl, rarity, name)}
           alt={name}
           className="w-full h-full object-cover"
         />

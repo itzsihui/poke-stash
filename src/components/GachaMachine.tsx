@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Sparkles, Loader2 } from "lucide-react";
 import gachaVideo from "@/assets/gacha-video.webm";
 import legendaryVideo from "@/assets/legendary-video.webm";
+import { resolveCardImage } from "@/lib/imageResolver";
 
 interface GachaMachineCard {
   id: string;
@@ -146,7 +147,7 @@ export const GachaMachine = ({ boxId, type, priceUSDT, onDraw, isDrawing }: Gach
                   isHovered ? "hover:scale-105 hover:shadow-glow hover:z-10" : ""
                 }`}>
                   <img
-                    src={card.image_url}
+                    src={resolveCardImage(card.image_url, card.rarity, card.name)}
                     alt={card.name}
                     className="w-full h-full object-cover"
                     loading="lazy"
