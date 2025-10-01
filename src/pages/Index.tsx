@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useTelegramAuth } from "@/hooks/useTelegramAuth";
+import { RecentDraws } from "@/components/RecentDraws";
 import charizardImg from "@/assets/charizard.jpg";
 import pikachuImg from "@/assets/pikachu.jpg";
 import mewtwoImg from "@/assets/mewtwo.jpg";
@@ -224,6 +225,11 @@ const Index = () => {
                 </Card>
               )
             )}
+          </div>
+
+          {/* Recent Draws Section */}
+          <div className="mt-12">
+            <RecentDraws />
           </div>
         </div>
       </div>
