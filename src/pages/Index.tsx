@@ -5,6 +5,7 @@ import { PokemonCard } from "@/components/PokemonCard";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useTelegramAuth } from "@/hooks/useTelegramAuth";
@@ -157,7 +158,7 @@ const Index = () => {
           {/* Single Gacha Machine Display */}
           <div className="max-w-2xl mx-auto">
             {isPremium ? (
-              premiumBoxId && (
+              premiumBoxId ? (
                 <GachaMachine
                   boxId={premiumBoxId}
                   type="premium"
@@ -165,9 +166,15 @@ const Index = () => {
                   onDraw={() => handleDrawCard(premiumBoxId)}
                   isDrawing={isDrawing}
                 />
+              ) : (
+                <Card className="bg-gradient-card border-border p-8">
+                  <p className="text-center text-muted-foreground">
+                    Premium box not found. Please contact admin.
+                  </p>
+                </Card>
               )
             ) : (
-              normalBoxId && (
+              normalBoxId ? (
                 <GachaMachine
                   boxId={normalBoxId}
                   type="normal"
@@ -175,6 +182,12 @@ const Index = () => {
                   onDraw={() => handleDrawCard(normalBoxId)}
                   isDrawing={isDrawing}
                 />
+              ) : (
+                <Card className="bg-gradient-card border-border p-8">
+                  <p className="text-center text-muted-foreground">
+                    Normal box not found. Please contact admin.
+                  </p>
+                </Card>
               )
             )}
           </div>
