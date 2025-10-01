@@ -108,15 +108,15 @@ export const GachaMachine = ({ boxId, type, priceUSDT, onDraw, isDrawing }: Gach
 
       {/* Machine Video + Grid */}
       <div className="p-6 relative">
-        {/* Video showcase */}
-        <div className="mb-6 rounded-xl overflow-hidden border border-border shadow-glow">
+        {/* Video showcase - Full width, proper aspect ratio */}
+        <div className="mb-6 rounded-lg overflow-hidden border-2 border-border shadow-glow">
           <video
             src={type === "premium" ? legendaryVideo : gachaVideo}
             autoPlay
             muted
             loop
             playsInline
-            className="w-full h-48 sm:h-56 md:h-64 object-cover"
+            className="w-full aspect-video object-cover"
             title={type === "premium" ? "Premium Gacha Machine" : "Normal Gacha Machine"}
           />
         </div>
@@ -129,33 +129,48 @@ export const GachaMachine = ({ boxId, type, priceUSDT, onDraw, isDrawing }: Gach
           </div>
         )}
         
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 mb-6 max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-background">
+        {/* Cards Grid - Improved display matching reference UI */}
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 sm:gap-3 mb-6 max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/50 scrollbar-track-background/50 p-2">
           {cards.length > 0 ? (
             cards.map((card) => (
               <div key={card.id} className="relative group">
-                <div className={`aspect-[3/4] rounded-lg overflow-hidden bg-background/50 border border-border relative transition-all duration-300 ${
-                  isHovered ? "hover:scale-110 hover:shadow-glow hover:z-10" : ""
+                <div className={`aspect-[2.5/3.5] rounded-lg overflow-hidden bg-card border-2 ${
+                  card.rarity === 'legendary' ? 'border-legendary' :
+                  card.rarity === 'epic' ? 'border-epic' :
+                  card.rarity === 'rare' ? 'border-rare' :
+                  'border-border'
+                } relative transition-all duration-300 ${
+                  isHovered ? "hover:scale-105 hover:shadow-glow hover:z-10" : ""
                 }`}>
                   <img
                     src={card.image_url}
                     alt={card.name}
                     className="w-full h-full object-cover"
+                    loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-holographic opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-shimmer bg-[length:200%_100%]" />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background to-transparent p-2">
-                    <p className="text-xs font-bold truncate">{card.name}</p>
-                    <p className={`text-xs font-semibold ${
-                      card.quantity < 3 ? "text-destructive animate-pulse" : "text-muted-foreground"
-                    }`}>
-                      ×{card.quantity}
-                    </p>
+                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/40" />
+                  <div className="absolute inset-0 bg-holographic opacity-0 group-hover:opacity-30 transition-opacity duration-300 animate-shimmer bg-[length:200%_100%]" />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background/95 to-transparent p-2">
+                    <p className="text-[10px] sm:text-xs font-bold truncate leading-tight">{card.name}</p>
+                    <div className="flex items-center justify-between mt-0.5">
+                      <p className={`text-[10px] sm:text-xs font-semibold ${
+                        card.quantity < 3 ? "text-destructive animate-pulse" : "text-muted-foreground"
+                      }`}>
+                        ×{card.quantity}
+                      </p>
+                      {card.estimated_value > 0 && (
+                        <p className="text-[10px] sm:text-xs font-bold text-primary">
+                          ${card.estimated_value}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             ))
           ) : (
-            Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="aspect-[3/4] rounded-lg border border-border bg-background/30 animate-pulse" />
+            Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="aspect-[2.5/3.5] rounded-lg border-2 border-border bg-card/30 animate-pulse" />
             ))
           )}
         </div>
