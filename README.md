@@ -2,7 +2,7 @@
 
 Bringing real-world Pokémon collectibles **onchain** through mystery box magic.
 
-Built as a **Telegram Mini App** on the **TON Network** — no apps to install, no wallets to configure. Just tap, pull, and flex.
+Built as a **Telegram Mini App** on the **TON Network** — no apps to install, no wallets to configure. Just tap, pull, and flex!
 
 ---
 
