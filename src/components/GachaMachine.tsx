@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { PokemonCard } from "./PokemonCard";
 import { supabase } from "@/integrations/supabase/client";
 import { Sparkles, Loader2 } from "lucide-react";
+import gachaVideo from "@/assets/gacha-video.webm";
 
 interface GachaMachineCard {
   id: string;
@@ -104,8 +105,20 @@ export const GachaMachine = ({ boxId, type, priceUSDT, onDraw, isDrawing }: Gach
         </div>
       </div>
 
-      {/* Card Display Grid */}
+      {/* Machine Video + Grid */}
       <div className="p-6 relative">
+        {/* Video showcase */}
+        <div className="mb-6 rounded-xl overflow-hidden border border-border shadow-glow">
+          <video
+            src={gachaVideo}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-48 sm:h-56 md:h-64 object-cover"
+            title={type === "premium" ? "Premium Gacha Machine" : "Normal Gacha Machine"}
+          />
+        </div>
         {/* Animated glow overlay when drawing */}
         {isDrawing && (
           <div className="absolute inset-0 pointer-events-none">
@@ -116,35 +129,41 @@ export const GachaMachine = ({ boxId, type, priceUSDT, onDraw, isDrawing }: Gach
         )}
         
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 mb-6 max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-background">
-          {cards.map((card) => (
-            <div key={card.id} className="relative group">
-              <div className={`aspect-[3/4] rounded-lg overflow-hidden bg-background/50 border border-border relative transition-all duration-300 ${
-                isHovered ? "hover:scale-110 hover:shadow-glow hover:z-10" : ""
-              }`}>
-                <img
-                  src={card.image_url}
-                  alt={card.name}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-holographic opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-shimmer bg-[length:200%_100%]" />
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background to-transparent p-2">
-                  <p className="text-xs font-bold truncate">{card.name}</p>
-                  <p className={`text-xs font-semibold ${
-                    card.quantity < 3 ? "text-destructive animate-pulse" : "text-muted-foreground"
-                  }`}>
-                    ×{card.quantity}
-                  </p>
+          {cards.length > 0 ? (
+            cards.map((card) => (
+              <div key={card.id} className="relative group">
+                <div className={`aspect-[3/4] rounded-lg overflow-hidden bg-background/50 border border-border relative transition-all duration-300 ${
+                  isHovered ? "hover:scale-110 hover:shadow-glow hover:z-10" : ""
+                }`}>
+                  <img
+                    src={card.image_url}
+                    alt={card.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-holographic opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-shimmer bg-[length:200%_100%]" />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background to-transparent p-2">
+                    <p className="text-xs font-bold truncate">{card.name}</p>
+                    <p className={`text-xs font-semibold ${
+                      card.quantity < 3 ? "text-destructive animate-pulse" : "text-muted-foreground"
+                    }`}>
+                      ×{card.quantity}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="aspect-[3/4] rounded-lg border border-border bg-background/30 animate-pulse" />
+            ))
+          )}
         </div>
 
         {/* Draw Button */}
         <Button
           size="lg"
           onClick={onDraw}
-          disabled={isDrawing || totalStock === 0}
+          disabled={isDrawing}
           className={`w-full font-bold text-lg py-6 transition-all duration-300 relative overflow-hidden ${
             type === "premium"
               ? "bg-gradient-to-r from-epic to-legendary hover:opacity-90"
@@ -162,8 +181,6 @@ export const GachaMachine = ({ boxId, type, priceUSDT, onDraw, isDrawing }: Gach
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
               Drawing...
             </>
-          ) : totalStock === 0 ? (
-            "Sold Out"
           ) : (
             <>
               <Sparkles className="mr-2 h-5 w-5" />
