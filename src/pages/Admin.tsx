@@ -77,8 +77,8 @@ const Admin = () => {
           delivery_fee,
           shipping_address,
           created_at,
-          cards (name, rarity),
-          profiles (telegram_username)
+          telegram_id,
+          cards (name, rarity)
         `)
         .order("created_at", { ascending: false });
 
@@ -183,7 +183,7 @@ const Admin = () => {
                 <TableBody>
                   {redemptions.map((redemption) => (
                     <TableRow key={redemption.id}>
-                      <TableCell>{redemption.profiles?.telegram_username || "Unknown"}</TableCell>
+                      <TableCell>{redemption.telegram_id}</TableCell>
                       <TableCell>{redemption.cards?.name}</TableCell>
                       <TableCell>
                         <Badge

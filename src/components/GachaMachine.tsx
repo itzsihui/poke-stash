@@ -109,14 +109,15 @@ export const GachaMachine = ({ boxId, type, priceUSDT, onDraw, isDrawing }: Gach
       {/* Machine Video + Grid */}
       <div className="p-6 relative">
         {/* Video showcase - Full width, proper aspect ratio */}
-        <div className="mb-6 rounded-lg overflow-hidden border-2 border-border shadow-glow">
+        <div className="mb-6 rounded-lg overflow-hidden border-2 border-border shadow-glow bg-background">
           <video
             src={type === "premium" ? legendaryVideo : gachaVideo}
             autoPlay
             muted
             loop
             playsInline
-            className="w-full aspect-video object-cover"
+            className="w-full h-auto"
+            style={{ maxHeight: '600px', objectFit: 'contain' }}
             title={type === "premium" ? "Premium Gacha Machine" : "Normal Gacha Machine"}
           />
         </div>
