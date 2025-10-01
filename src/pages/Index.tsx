@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Navbar } from "@/components/Navbar";
 import { GachaMachine } from "@/components/GachaMachine";
 import { PokemonCard } from "@/components/PokemonCard";
 import { PaymentConfirmDialog } from "@/components/PaymentConfirmDialog";
@@ -158,7 +157,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
       <div className="container mx-auto px-4 py-8 md:py-12">
         <div className="space-y-8">
           {/* Header */}

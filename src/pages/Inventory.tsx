@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Navbar } from "@/components/Navbar";
 import { PokemonCard } from "@/components/PokemonCard";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -111,7 +110,6 @@ const Inventory = () => {
   if (loading || authLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <Navbar />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center space-y-4">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
@@ -124,7 +122,6 @@ const Inventory = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
       <div className="container mx-auto px-4 py-8">
         <div className="space-y-6">
           <div>
