@@ -89,6 +89,11 @@ export const RecentDraws = () => {
     return formatDistanceToNow(new Date(date), { addSuffix: true });
   };
 
+  const convertToTON = (usdValue: number) => {
+    // Convert USD to TON (approximate rate: 1 USD ≈ 0.17 TON based on typical TON prices)
+    return (usdValue * 0.17).toFixed(2);
+  };
+
   return (
     <div className="w-full space-y-6">
       <div className="text-center">
@@ -119,7 +124,7 @@ export const RecentDraws = () => {
                   className="w-full h-full object-cover"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
               </div>
               
               <div className="p-3 space-y-2">
@@ -139,7 +144,7 @@ export const RecentDraws = () => {
                     {getTimeAgo(draw.acquired_at)}
                   </p>
                   <p className="text-xs font-bold text-primary">
-                    ${draw.card_value}
+                    {convertToTON(draw.card_value)} TON
                   </p>
                 </div>
               </div>
