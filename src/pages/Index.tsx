@@ -24,7 +24,7 @@ const Index = () => {
 
   useEffect(() => {
     fetchBoxes();
-  }, []);
+  }, [isPremium]);
 
   const fetchBoxes = async () => {
     const { data, error } = await supabase
