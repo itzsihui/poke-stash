@@ -52,11 +52,12 @@ export const useTelegramAuth = () => {
           // Create or update profile in database
           const { error } = await supabase
             .from("profiles")
-            .upsert([{
-              telegram_id: user.id.toString(),
-              telegram_username: user.username || user.first_name,
-              id: user.id.toString(),
-            }], {
+            .upsert([
+              {
+                telegram_id: user.id.toString(),
+                telegram_username: user.username || user.first_name,
+              },
+            ], {
               onConflict: 'telegram_id'
             });
 
@@ -75,11 +76,12 @@ export const useTelegramAuth = () => {
           // Create mock profile
           await supabase
             .from("profiles")
-            .upsert([{
-              telegram_id: mockUser.id.toString(),
-              telegram_username: mockUser.username,
-              id: mockUser.id.toString(),
-            }], {
+            .upsert([
+              {
+                telegram_id: mockUser.id.toString(),
+                telegram_username: mockUser.username,
+              },
+            ], {
               onConflict: 'telegram_id'
             });
         }
@@ -94,11 +96,12 @@ export const useTelegramAuth = () => {
 
         await supabase
           .from("profiles")
-          .upsert([{
-            telegram_id: mockUser.id.toString(),
-            telegram_username: mockUser.username,
-            id: mockUser.id.toString(),
-          }], {
+          .upsert([
+            {
+              telegram_id: mockUser.id.toString(),
+              telegram_username: mockUser.username,
+            },
+          ], {
             onConflict: 'telegram_id'
           });
       }

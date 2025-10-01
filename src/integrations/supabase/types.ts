@@ -170,7 +170,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
-          id: string
+          id?: string
           telegram_id?: string | null
           telegram_username?: string | null
           wallet_address?: string | null
