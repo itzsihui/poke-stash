@@ -21,8 +21,8 @@ export const Navbar = () => {
   return (
     <nav className="border-b border-border bg-card/50 backdrop-blur-lg sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between gap-4 overflow-x-hidden">
+          <div className="flex items-center gap-2 flex-wrap">
             <Button variant="ghost" size="sm" onClick={() => navigate("/")}>
               <Gift className="h-4 w-4 mr-2" />
               Open Boxes
@@ -36,7 +36,9 @@ export const Navbar = () => {
               Admin
             </Button>
           </div>
-          <TonConnectButton />
+          <div className="shrink-0 max-w-[200px] overflow-hidden">
+            <TonConnectButton />
+          </div>
         </div>
       </div>
     </nav>

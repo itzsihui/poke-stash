@@ -249,7 +249,7 @@ const Index = () => {
 
       {/* Card Reveal Dialog */}
       <Dialog open={!!revealedCard} onOpenChange={() => setRevealedCard(null)}>
-        <DialogContent className="bg-gradient-card border-border max-w-md">
+        <DialogContent className="bg-gradient-card border-border max-w-md [&>button]:w-8 [&>button]:h-8 [&>button]:top-4 [&>button]:right-4">
           <div className="space-y-6 py-4">
             <div className="text-center space-y-2">
               <div className="text-6xl animate-drop">🎉</div>
