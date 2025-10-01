@@ -1,25 +1,64 @@
-Welcome to Pullemon
-Venture into RWAs, we are bringing collectibles onchain in the form of mystery boxes
+# 🎉 Welcome to **Pullemon** — Gotta *Pull* ’Em All!
 
-Building on Telegram and TON network for ease of access
-Gachapon Mini App v0.1
+Bringing real-world Pokémon collectibles **onchain** through mystery box magic.
 
-Get started now:
-Telegram bot: https://t.me/pokestash_bot
+Built as a **Telegram Mini App** on the **TON Network** — no apps to install, no wallets to configure. Just tap, pull, and flex.
 
---More info--
+---
 
-Project Description: 
-Telegram-based gachapon mini-app that lets users draw graded Pokémon cards instantly using Toncoin (TON). Inspired by the thrill of capsule toy machines and booster pack openings, Pullemon delivers both digital excitement and real-world value in one seamless experience.
+## 🚀 Get Started
 
-How it works: 
-Users tap a button to “pull” a card. Each pull reveals a random graded Pokémon card with assigned rarity tiers (Common, Rare, Epic, Legendary - based on value) that is represented by an NFT. Cards are displayed digitally in the user’s inventory/wallet, complete with images and grading details.
+**Telegram Bot:** 👉 https://t.me/pokestash_bot  
+**Version:** Gachapon Mini App **v0.1**
 
-Trust & authenticity: 
-Every prize comes from a pool of professionally graded slabs (PSA, BGS, CGC), ensuring authenticity and condition. Odds are transparent, verifiable, and powered by TON blockchain logic.
+Pull your first graded Pokémon card in seconds!
 
-Hybrid reward system: 
-Players can keep their cards digitally for bragging rights, trade them (future feature), or request physical delivery straight to their doorstep.
+---
 
-Accessible and viral: 
-Built inside Telegram, Pullemon is frictionless — no new app or complex crypto setup required. Users can share their pulls directly in chats, fueling community excitement and organic growth.
+## 🎁 What Is Pullemon?
+
+Imagine:
+
+- 🎰 A *gachapon machine*  
+- ✨ A *booster pack opening*  
+- 🧬 An *NFT reveal animation*  
+
+All rolled into **one button tap** — inside **Telegram**.
+
+Every pull gives you a **real graded Pokémon card**, backed by an **on-chain NFT**.  
+Instant dopamine. Tangible value.
+
+---
+
+## 🕹 How It Works
+
+| Step | Action | Result |
+|------|--------|--------|
+| 1️⃣ | Tap **"Draw"** | Spend TON to draw a card from the gacha machine |
+| 2️⃣ | 🎴 Reveal | Get a *graded Pokémon card NFT* |
+| 3️⃣ | 🚚 Redeem | Trade or **request physical delivery** |
+
+
+---
+
+## ✅ Trust & Authenticity
+
+- All prizes are **professionally graded slabs** (PSA, BGS, CGC)
+- NFTs act as **proof of ownership**
+- **Future features:** trading, marketplace, flex wall
+
+---
+
+## 📢 Viral by Design
+
+- 100% inside **Telegram**
+- No crypto knowledge needed
+- Flex. Brag. Repeat.
+
+---
+
+### 🔗 Join the Pullution
+
+Start pulling now: https://t.me/pokestash_bot
+
+Gotta **pull ’em** all.
