@@ -145,17 +145,20 @@ const Inventory = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {inventory.map((item) => (
-                <PokemonCard
-                  key={item.id}
-                  name={item.cards.name}
-                  rarity={item.cards.rarity}
-                  imageUrl={item.cards.image_url}
-                  estimatedValue={item.cards.estimated_value}
-                  showValue
-                  onClick={() => item.cards.physical_available && setSelectedCard(item)}
-                />
-              ))}
+              {inventory.map((item) => {
+                if (!item.cards) return null;
+                return (
+                  <PokemonCard
+                    key={item.id}
+                    name={item.cards.name}
+                    rarity={item.cards.rarity}
+                    imageUrl={item.cards.image_url}
+                    estimatedValue={item.cards.estimated_value}
+                    showValue
+                    onClick={() => item.cards.physical_available && setSelectedCard(item)}
+                  />
+                );
+              })}
             </div>
           )}
         </div>
