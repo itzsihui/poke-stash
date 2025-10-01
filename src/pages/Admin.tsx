@@ -27,10 +27,8 @@ const Admin = () => {
   }, []);
 
   const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/auth");
-    }
+    // Demo mode: allow access without auth
+    return;
   };
 
   const fetchStats = async () => {

@@ -58,17 +58,19 @@ export const GachaMachine = ({ boxId, type, priceUSDT, onDraw, isDrawing }: Gach
     }
 
     if (data) {
-      const machineCards = data.map((item: any) => ({
-        id: item.cards.id,
-        name: item.cards.name,
-        rarity: item.cards.rarity,
-        image_url: item.cards.image_url,
-        estimated_value: item.cards.estimated_value,
-        quantity: item.quantity,
-      }));
+      const machineCards = data
+        .filter((item: any) => item.cards && item.quantity > 0)
+        .map((item: any) => ({
+          id: item.cards.id,
+          name: item.cards.name,
+          rarity: item.cards.rarity,
+          image_url: item.cards.image_url,
+          estimated_value: item.cards.estimated_value,
+          quantity: item.quantity,
+        }));
 
       setCards(machineCards);
-      setTotalStock(machineCards.reduce((acc, card) => acc + card.quantity, 0));
+      setTotalStock(machineCards.reduce((acc: number, card: GachaMachineCard) => acc + (card.quantity || 0), 0));
     }
   };
 
