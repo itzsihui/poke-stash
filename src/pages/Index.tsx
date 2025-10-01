@@ -144,7 +144,7 @@ const Index = () => {
                 id="gacha-toggle"
                 checked={isPremium}
                 onCheckedChange={setIsPremium}
-                className="data-[state=checked]:bg-epic"
+                className="data-[state=checked]:bg-epic border-2 border-border"
               />
               <Label 
                 htmlFor="gacha-toggle" 
