@@ -5,6 +5,7 @@ import { PokemonCard } from "./PokemonCard";
 import { supabase } from "@/integrations/supabase/client";
 import { Sparkles, Loader2 } from "lucide-react";
 import gachaVideo from "@/assets/gacha-video.webm";
+import legendaryVideo from "@/assets/legendary-video.webm";
 
 interface GachaMachineCard {
   id: string;
@@ -110,7 +111,7 @@ export const GachaMachine = ({ boxId, type, priceUSDT, onDraw, isDrawing }: Gach
         {/* Video showcase */}
         <div className="mb-6 rounded-xl overflow-hidden border border-border shadow-glow">
           <video
-            src={gachaVideo}
+            src={type === "premium" ? legendaryVideo : gachaVideo}
             autoPlay
             muted
             loop

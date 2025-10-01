@@ -3,6 +3,8 @@ import { Navbar } from "@/components/Navbar";
 import { GachaMachine } from "@/components/GachaMachine";
 import { PokemonCard } from "@/components/PokemonCard";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useTelegramAuth } from "@/hooks/useTelegramAuth";
@@ -16,6 +18,7 @@ const Index = () => {
   const [revealedCard, setRevealedCard] = useState<any>(null);
   const [normalBoxId, setNormalBoxId] = useState<string>("");
   const [premiumBoxId, setPremiumBoxId] = useState<string>("");
+  const [isPremium, setIsPremium] = useState(false);
   const { toast } = useToast();
   const { telegramId, isLoading } = useTelegramAuth();
 
@@ -122,32 +125,57 @@ const Index = () => {
           {/* Header */}
           <div className="text-center space-y-4">
             <h1 className="text-4xl md:text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              🎰 Gacha Machines
+              🎰 Gacha Machine
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
               Draw rare Pokémon cards from our gacha machines! Each machine has visible inventory and limited stock!
             </p>
+            
+            {/* Toggle Switch */}
+            <div className="flex items-center justify-center gap-4 mt-6">
+              <Label 
+                htmlFor="gacha-toggle" 
+                className={`text-lg font-semibold transition-colors cursor-pointer ${!isPremium ? 'text-primary' : 'text-muted-foreground'}`}
+              >
+                Normal Gacha
+              </Label>
+              <Switch
+                id="gacha-toggle"
+                checked={isPremium}
+                onCheckedChange={setIsPremium}
+                className="data-[state=checked]:bg-epic"
+              />
+              <Label 
+                htmlFor="gacha-toggle" 
+                className={`text-lg font-semibold transition-colors cursor-pointer ${isPremium ? 'text-epic' : 'text-muted-foreground'}`}
+              >
+                Premium Gacha
+              </Label>
+            </div>
           </div>
 
-          {/* Gacha Machines Grid */}
-          <div className="grid md:grid-cols-2 gap-6 md:gap-8">
-            {normalBoxId && (
-              <GachaMachine
-                boxId={normalBoxId}
-                type="normal"
-                priceUSDT={50}
-                onDraw={() => handleDrawCard(normalBoxId)}
-                isDrawing={isDrawing}
-              />
-            )}
-            {premiumBoxId && (
-              <GachaMachine
-                boxId={premiumBoxId}
-                type="premium"
-                priceUSDT={150}
-                onDraw={() => handleDrawCard(premiumBoxId)}
-                isDrawing={isDrawing}
-              />
+          {/* Single Gacha Machine Display */}
+          <div className="max-w-2xl mx-auto">
+            {isPremium ? (
+              premiumBoxId && (
+                <GachaMachine
+                  boxId={premiumBoxId}
+                  type="premium"
+                  priceUSDT={150}
+                  onDraw={() => handleDrawCard(premiumBoxId)}
+                  isDrawing={isDrawing}
+                />
+              )
+            ) : (
+              normalBoxId && (
+                <GachaMachine
+                  boxId={normalBoxId}
+                  type="normal"
+                  priceUSDT={50}
+                  onDraw={() => handleDrawCard(normalBoxId)}
+                  isDrawing={isDrawing}
+                />
+              )
             )}
           </div>
         </div>
