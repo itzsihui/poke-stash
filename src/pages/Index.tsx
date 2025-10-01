@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { GachaMachine } from "@/components/GachaMachine";
 import { PokemonCard } from "@/components/PokemonCard";
+import { PaymentConfirmDialog } from "@/components/PaymentConfirmDialog";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -20,8 +21,12 @@ const Index = () => {
   const [normalBoxId, setNormalBoxId] = useState<string>("");
   const [premiumBoxId, setPremiumBoxId] = useState<string>("");
   const [isPremium, setIsPremium] = useState(false);
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [pendingBoxId, setPendingBoxId] = useState<string>("");
   const { toast } = useToast();
   const { telegramId, isLoading } = useTelegramAuth();
+
+  const TON_AMOUNT = 0.001; // Demo amount
 
   useEffect(() => {
     fetchBoxes();
@@ -47,7 +52,7 @@ const Index = () => {
     }
   };
 
-  const handleDrawCard = async (boxId: string) => {
+  const handleDrawCard = (boxId: string) => {
     if (!telegramId) {
       toast({
         title: "Error",
@@ -57,6 +62,33 @@ const Index = () => {
       return;
     }
 
+    // Show payment confirmation dialog
+    setPendingBoxId(boxId);
+    setShowPaymentDialog(true);
+  };
+
+  const handlePaymentConfirm = async () => {
+    setShowPaymentDialog(false);
+    
+    // Simulate TON payment (for demo purposes)
+    toast({
+      title: "Payment Processing",
+      description: `Deducting ${TON_AMOUNT} TON from your wallet...`,
+    });
+
+    // Small delay to simulate payment processing
+    setTimeout(async () => {
+      toast({
+        title: "Payment Success",
+        description: `${TON_AMOUNT} TON deducted successfully!`,
+      });
+
+      // Proceed with card draw
+      await processCardDraw(pendingBoxId);
+    }, 1000);
+  };
+
+  const processCardDraw = async (boxId: string) => {
     setIsDrawing(true);
 
     try {
@@ -193,6 +225,15 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      {/* Payment Confirmation Dialog */}
+      <PaymentConfirmDialog
+        open={showPaymentDialog}
+        onOpenChange={setShowPaymentDialog}
+        onConfirm={handlePaymentConfirm}
+        gachaType={isPremium ? "premium" : "normal"}
+        tonAmount={TON_AMOUNT}
+      />
 
       {/* Card Reveal Dialog */}
       <Dialog open={!!revealedCard} onOpenChange={() => setRevealedCard(null)}>
