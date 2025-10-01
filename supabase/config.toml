@@ -2,6 +2,3 @@ project_id = "aeenrdnrcfskooqzlmla"
 
 [functions.generate-card-image]
 verify_jwt = false
-
-[functions.generate-video]
-verify_jwt = false
