@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Gift, Package, Settings, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { TonConnectButton } from "@/components/TonConnectButton";
 
 export const Navbar = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export const Navbar = () => {
   return (
     <nav className="border-b border-border bg-card/50 backdrop-blur-lg sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" onClick={() => navigate("/")}>
               <Gift className="h-4 w-4 mr-2" />
@@ -35,6 +36,7 @@ export const Navbar = () => {
               Admin
             </Button>
           </div>
+          <TonConnectButton />
         </div>
       </div>
     </nav>

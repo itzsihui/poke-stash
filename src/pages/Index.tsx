@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useTelegramAuth } from "@/hooks/useTelegramAuth";
+import { useTonPayment } from "@/hooks/useTonPayment";
 import { RecentDraws } from "@/components/RecentDraws";
 import charizardImg from "@/assets/charizard.jpg";
 import pikachuImg from "@/assets/pikachu.jpg";
@@ -27,8 +28,9 @@ const Index = () => {
   const [pendingBoxId, setPendingBoxId] = useState<string>("");
   const { toast } = useToast();
   const { telegramId, isLoading } = useTelegramAuth();
+  const { sendTonPayment, isConnected } = useTonPayment();
 
-  const TON_AMOUNT = 0.001; // Demo amount
+  const TON_AMOUNT = 0.001;
 
   useEffect(() => {
     fetchBoxes();
@@ -64,7 +66,15 @@ const Index = () => {
       return;
     }
 
-    // Show payment confirmation dialog
+    if (!isConnected) {
+      toast({
+        title: "Wallet Not Connected",
+        description: "Please connect your TON wallet to continue",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setPendingBoxId(boxId);
     setShowPaymentDialog(true);
   };
@@ -72,22 +82,16 @@ const Index = () => {
   const handlePaymentConfirm = async () => {
     setShowPaymentDialog(false);
     
-    // Simulate TON payment (for demo purposes)
-    toast({
-      title: "Payment Processing",
-      description: `Deducting ${TON_AMOUNT} TON from your wallet...`,
-    });
-
-    // Small delay to simulate payment processing
-    setTimeout(async () => {
-      toast({
-        title: "Payment Success",
-        description: `${TON_AMOUNT} TON deducted successfully!`,
-      });
-
-      // Proceed with card draw
+    try {
+      // Send real TON payment to smart contract
+      await sendTonPayment(TON_AMOUNT);
+      
+      // Proceed with card draw after successful payment
       await processCardDraw(pendingBoxId);
-    }, 1000);
+    } catch (error) {
+      console.error("Payment failed:", error);
+      // Error toast is already shown in useTonPayment hook
+    }
   };
 
   const processCardDraw = async (boxId: string) => {
