@@ -17,38 +17,51 @@ export type Database = {
       boxes: {
         Row: {
           active: boolean | null
+          box_type: string | null
           common_odds: number
           created_at: string | null
           epic_odds: number
           id: string
           legendary_odds: number
+          name: string | null
           price: number
+          price_usdt: number | null
           rare_odds: number
+          stock_limit: number | null
         }
         Insert: {
           active?: boolean | null
+          box_type?: string | null
           common_odds?: number
           created_at?: string | null
           epic_odds?: number
           id?: string
           legendary_odds?: number
+          name?: string | null
           price?: number
+          price_usdt?: number | null
           rare_odds?: number
+          stock_limit?: number | null
         }
         Update: {
           active?: boolean | null
+          box_type?: string | null
           common_odds?: number
           created_at?: string | null
           epic_odds?: number
           id?: string
           legendary_odds?: number
+          name?: string | null
           price?: number
+          price_usdt?: number | null
           rare_odds?: number
+          stock_limit?: number | null
         }
         Relationships: []
       }
       cards: {
         Row: {
+          box_type: string | null
           created_at: string | null
           estimated_value: number | null
           id: string
@@ -58,6 +71,7 @@ export type Database = {
           rarity: Database["public"]["Enums"]["card_rarity"]
         }
         Insert: {
+          box_type?: string | null
           created_at?: string | null
           estimated_value?: number | null
           id?: string
@@ -67,6 +81,7 @@ export type Database = {
           rarity: Database["public"]["Enums"]["card_rarity"]
         }
         Update: {
+          box_type?: string | null
           created_at?: string | null
           estimated_value?: number | null
           id?: string
@@ -82,19 +97,19 @@ export type Database = {
           acquired_at: string | null
           card_id: string
           id: string
-          user_id: string
+          telegram_id: string
         }
         Insert: {
           acquired_at?: string | null
           card_id: string
           id?: string
-          user_id: string
+          telegram_id: string
         }
         Update: {
           acquired_at?: string | null
           card_id?: string
           id?: string
-          user_id?: string
+          telegram_id?: string
         }
         Relationships: [
           {
@@ -104,11 +119,43 @@ export type Database = {
             referencedRelation: "cards"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      machine_inventory: {
+        Row: {
+          box_id: string | null
+          card_id: string | null
+          created_at: string | null
+          id: string
+          quantity: number | null
+        }
+        Insert: {
+          box_id?: string | null
+          card_id?: string | null
+          created_at?: string | null
+          id?: string
+          quantity?: number | null
+        }
+        Update: {
+          box_id?: string | null
+          card_id?: string | null
+          created_at?: string | null
+          id?: string
+          quantity?: number | null
+        }
+        Relationships: [
           {
-            foreignKeyName: "inventory_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "machine_inventory_box_id_fkey"
+            columns: ["box_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "boxes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "machine_inventory_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "cards"
             referencedColumns: ["id"]
           },
         ]
@@ -117,18 +164,21 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
+          telegram_id: string | null
           telegram_username: string | null
           wallet_address: string | null
         }
         Insert: {
           created_at?: string | null
           id: string
+          telegram_id?: string | null
           telegram_username?: string | null
           wallet_address?: string | null
         }
         Update: {
           created_at?: string | null
           id?: string
+          telegram_id?: string | null
           telegram_username?: string | null
           wallet_address?: string | null
         }
@@ -144,7 +194,7 @@ export type Database = {
           shipped_at: string | null
           shipping_address: string
           status: Database["public"]["Enums"]["redemption_status"]
-          user_id: string
+          telegram_id: string
         }
         Insert: {
           card_id: string
@@ -155,7 +205,7 @@ export type Database = {
           shipped_at?: string | null
           shipping_address: string
           status?: Database["public"]["Enums"]["redemption_status"]
-          user_id: string
+          telegram_id: string
         }
         Update: {
           card_id?: string
@@ -166,7 +216,7 @@ export type Database = {
           shipped_at?: string | null
           shipping_address?: string
           status?: Database["public"]["Enums"]["redemption_status"]
-          user_id?: string
+          telegram_id?: string
         }
         Relationships: [
           {
@@ -183,13 +233,6 @@ export type Database = {
             referencedRelation: "inventory"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "redemptions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
         ]
       }
       transactions: {
@@ -198,24 +241,24 @@ export type Database = {
           card_id: string | null
           created_at: string | null
           id: string
+          telegram_id: string
           transaction_type: Database["public"]["Enums"]["transaction_type"]
-          user_id: string
         }
         Insert: {
           amount: number
           card_id?: string | null
           created_at?: string | null
           id?: string
+          telegram_id: string
           transaction_type: Database["public"]["Enums"]["transaction_type"]
-          user_id: string
         }
         Update: {
           amount?: number
           card_id?: string | null
           created_at?: string | null
           id?: string
+          telegram_id?: string
           transaction_type?: Database["public"]["Enums"]["transaction_type"]
-          user_id?: string
         }
         Relationships: [
           {
@@ -225,13 +268,6 @@ export type Database = {
             referencedRelation: "cards"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "transactions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
         ]
       }
     }
@@ -239,7 +275,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      draw_from_gacha: {
+        Args: { p_box_id: string; p_telegram_id: string }
+        Returns: {
+          card_id: string
+          card_image: string
+          card_name: string
+          card_rarity: string
+          card_value: number
+        }[]
+      }
     }
     Enums: {
       card_rarity: "legendary" | "epic" | "rare" | "common"
