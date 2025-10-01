@@ -156,6 +156,11 @@ export const GachaMachine = ({ boxId, type, priceUSDT, onDraw, isDrawing }: Gach
           </div>
         )}
         
+        {/* Section Title */}
+        <h3 className="text-xl font-bold text-center mb-4 text-foreground">
+          Loaded in the gacha machine
+        </h3>
+        
         {/* Cards Grid - Improved display matching reference UI */}
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 sm:gap-3 mb-6 max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/50 scrollbar-track-background/50 p-2">
           {cards.length > 0 ? (
