@@ -14,6 +14,7 @@ import charizardImg from "@/assets/charizard.jpg";
 import pikachuImg from "@/assets/pikachu.jpg";
 import mewtwoImg from "@/assets/mewtwo.jpg";
 import eeveeImg from "@/assets/eevee.jpg";
+import gachaIcon from "@/assets/gacha-icon.png";
 
 const Index = () => {
   const [isDrawing, setIsDrawing] = useState(false);
@@ -157,8 +158,9 @@ const Index = () => {
         <div className="space-y-8">
           {/* Header */}
           <div className="text-center space-y-4">
-            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              🎰 Gacha Machine
+            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent flex items-center justify-center gap-4">
+              <img src={gachaIcon} alt="Gacha" className="w-12 h-12 md:w-16 md:h-16 inline-block" />
+              Gacha Machine
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
               Draw rare Pokémon cards from our gacha machines! Each machine has visible inventory and limited stock!
