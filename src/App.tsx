@@ -10,7 +10,6 @@ import Inventory from "./pages/Inventory";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
-import PSACardGenerator from "./pages/PSACardGenerator";
 
 const queryClient = new QueryClient();
 
@@ -31,7 +30,6 @@ const App = () => {
             <Route path="/" element={<Index />} />
             <Route path="/inventory" element={<Inventory />} />
             <Route path="/admin" element={<Admin />} />
-            <Route path="/admin/generate-psa-cards" element={<PSACardGenerator />} />
             <Route path="/auth" element={<Auth />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
