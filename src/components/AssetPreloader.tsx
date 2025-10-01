@@ -1,5 +1,6 @@
 import { useAssetPreloader } from '@/hooks/useAssetPreloader';
 import { Progress } from '@/components/ui/progress';
+import gachaIcon from '@/assets/gacha-icon.png';
 
 interface AssetPreloaderProps {
   onComplete: () => void;
@@ -22,7 +23,11 @@ export const AssetPreloader = ({ onComplete }: AssetPreloaderProps) => {
       <div className="max-w-md w-full px-8 space-y-8">
         {/* Logo/Icon */}
         <div className="text-center space-y-4">
-          <div className="text-6xl animate-float">🎰</div>
+          <img 
+            src={gachaIcon} 
+            alt="Gacha Machine" 
+            className="w-32 h-32 mx-auto animate-float"
+          />
           <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
             Gacha Machine
           </h1>

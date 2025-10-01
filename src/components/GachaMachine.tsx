@@ -79,7 +79,7 @@ export const GachaMachine = ({ boxId, type, priceUSDT, onDraw, isDrawing }: Gach
     <Card 
       className={`relative overflow-hidden bg-gradient-card border-2 transition-all duration-500 ${
         type === "premium" ? "border-epic" : "border-primary"
-      } ${isHovered ? "shadow-glow scale-105 animate-glow-pulse" : ""} ${
+      } ${
         isDrawing ? "animate-shake animate-border-glow" : ""
       }`}
       onMouseEnter={() => setIsHovered(true)}
