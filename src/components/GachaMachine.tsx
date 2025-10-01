@@ -1,0 +1,201 @@
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { PokemonCard } from "./PokemonCard";
+import { supabase } from "@/integrations/supabase/client";
+import { Sparkles, Loader2 } from "lucide-react";
+
+interface GachaMachineCard {
+  id: string;
+  name: string;
+  rarity: "legendary" | "epic" | "rare" | "common";
+  image_url: string;
+  estimated_value: number;
+  quantity: number;
+}
+
+interface GachaMachineProps {
+  boxId: string;
+  type: "normal" | "premium";
+  priceUSDT: number;
+  onDraw: () => void;
+  isDrawing: boolean;
+}
+
+export const GachaMachine = ({ boxId, type, priceUSDT, onDraw, isDrawing }: GachaMachineProps) => {
+  const [cards, setCards] = useState<GachaMachineCard[]>([]);
+  const [totalStock, setTotalStock] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Mock TON conversion rate (1 USDT = ~2 TON for example)
+  const tonPrice = (priceUSDT * 2).toFixed(0);
+
+  useEffect(() => {
+    fetchMachineInventory();
+  }, [boxId]);
+
+  const fetchMachineInventory = async () => {
+    const { data, error } = await supabase
+      .from("machine_inventory")
+      .select(`
+        quantity,
+        card_id,
+        cards (
+          id,
+          name,
+          rarity,
+          image_url,
+          estimated_value
+        )
+      `)
+      .eq("box_id", boxId);
+
+    if (error) {
+      console.error("Error fetching machine inventory:", error);
+      return;
+    }
+
+    if (data) {
+      const machineCards = data.map((item: any) => ({
+        id: item.cards.id,
+        name: item.cards.name,
+        rarity: item.cards.rarity,
+        image_url: item.cards.image_url,
+        estimated_value: item.cards.estimated_value,
+        quantity: item.quantity,
+      }));
+
+      setCards(machineCards);
+      setTotalStock(machineCards.reduce((acc, card) => acc + card.quantity, 0));
+    }
+  };
+
+  return (
+    <Card 
+      className={`relative overflow-hidden bg-gradient-card border-2 transition-all duration-500 ${
+        type === "premium" ? "border-epic" : "border-primary"
+      } ${isHovered ? "shadow-glow scale-105 animate-glow-pulse" : ""} ${
+        isDrawing ? "animate-shake animate-border-glow" : ""
+      }`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Machine Header */}
+      <div className={`p-6 text-center border-b-2 relative overflow-hidden ${
+        type === "premium" ? "border-epic bg-epic/10" : "border-primary bg-primary/10"
+      }`}>
+        {/* Animated background glow */}
+        {isDrawing && (
+          <div className="absolute inset-0 bg-gradient-primary opacity-50 animate-shimmer bg-[length:200%_100%]" />
+        )}
+        <h2 className={`text-3xl font-bold mb-2 relative z-10 ${
+          type === "premium" ? "text-epic" : "text-primary"
+        }`}>
+          {type === "premium" ? "💎 Premium" : "⭐ Normal"} Gacha
+        </h2>
+        <div className="space-y-1 relative z-10">
+          <p className="text-2xl font-bold">{priceUSDT} USDT</p>
+          <p className="text-lg text-muted-foreground">≈ {tonPrice} TON</p>
+          <p className="text-sm text-muted-foreground">
+            <span className={totalStock < 10 ? "text-destructive font-bold animate-pulse" : ""}>
+              {totalStock} cards remaining
+            </span>
+          </p>
+        </div>
+      </div>
+
+      {/* Card Display Grid */}
+      <div className="p-6 relative">
+        {/* Animated glow overlay when drawing */}
+        {isDrawing && (
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute inset-0 bg-gradient-primary opacity-30 animate-pulse" />
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent animate-shimmer bg-[length:200%_100%]" />
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent animate-shimmer bg-[length:200%_100%]" />
+          </div>
+        )}
+        
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 mb-6 max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-background">
+          {cards.map((card) => (
+            <div key={card.id} className="relative group">
+              <div className={`aspect-[3/4] rounded-lg overflow-hidden bg-background/50 border border-border relative transition-all duration-300 ${
+                isHovered ? "hover:scale-110 hover:shadow-glow hover:z-10" : ""
+              }`}>
+                <img
+                  src={card.image_url}
+                  alt={card.name}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-holographic opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-shimmer bg-[length:200%_100%]" />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background to-transparent p-2">
+                  <p className="text-xs font-bold truncate">{card.name}</p>
+                  <p className={`text-xs font-semibold ${
+                    card.quantity < 3 ? "text-destructive animate-pulse" : "text-muted-foreground"
+                  }`}>
+                    ×{card.quantity}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Draw Button */}
+        <Button
+          size="lg"
+          onClick={onDraw}
+          disabled={isDrawing || totalStock === 0}
+          className={`w-full font-bold text-lg py-6 transition-all duration-300 relative overflow-hidden ${
+            type === "premium"
+              ? "bg-gradient-to-r from-epic to-legendary hover:opacity-90"
+              : "bg-gradient-primary hover:opacity-90"
+          } text-primary-foreground ${
+            isDrawing ? "animate-pulse" : isHovered ? "shadow-glow animate-glow-pulse" : ""
+          }`}
+        >
+          {/* Button shimmer effect */}
+          {!isDrawing && (
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer bg-[length:200%_100%]" />
+          )}
+          {isDrawing ? (
+            <>
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              Drawing...
+            </>
+          ) : totalStock === 0 ? (
+            "Sold Out"
+          ) : (
+            <>
+              <Sparkles className="mr-2 h-5 w-5" />
+              Draw Card
+            </>
+          )}
+        </Button>
+      </div>
+
+      {/* Machine lights animation - top and bottom */}
+      {isDrawing && (
+        <>
+          <div className="absolute top-0 left-0 right-0 h-3 overflow-hidden">
+            <div className="h-full flex gap-2">
+              <div className="flex-1 bg-primary animate-pulse" style={{ animationDelay: "0s" }} />
+              <div className="flex-1 bg-epic animate-pulse" style={{ animationDelay: "0.2s" }} />
+              <div className="flex-1 bg-legendary animate-pulse" style={{ animationDelay: "0.4s" }} />
+              <div className="flex-1 bg-epic animate-pulse" style={{ animationDelay: "0.6s" }} />
+              <div className="flex-1 bg-primary animate-pulse" style={{ animationDelay: "0.8s" }} />
+            </div>
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 h-3 overflow-hidden">
+            <div className="h-full flex gap-2">
+              <div className="flex-1 bg-legendary animate-pulse" style={{ animationDelay: "0.8s" }} />
+              <div className="flex-1 bg-epic animate-pulse" style={{ animationDelay: "0.6s" }} />
+              <div className="flex-1 bg-primary animate-pulse" style={{ animationDelay: "0.4s" }} />
+              <div className="flex-1 bg-epic animate-pulse" style={{ animationDelay: "0.2s" }} />
+              <div className="flex-1 bg-legendary animate-pulse" style={{ animationDelay: "0s" }} />
+            </div>
+          </div>
+        </>
+      )}
+    </Card>
+  );
+};

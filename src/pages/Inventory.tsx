@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useTelegramAuth } from "@/hooks/useTelegramAuth";
 import { useNavigate } from "react-router-dom";
 
 interface InventoryCard {
@@ -28,19 +29,14 @@ const Inventory = () => {
   const [shippingAddress, setShippingAddress] = useState("");
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { telegramId, isLoading: authLoading } = useTelegramAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    checkAuth();
-    fetchInventory();
-  }, []);
-
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/auth");
+    if (!authLoading && telegramId) {
+      fetchInventory();
     }
-  };
+  }, [authLoading, telegramId]);
 
   const fetchInventory = async () => {
     try {
@@ -58,6 +54,7 @@ const Inventory = () => {
             physical_available
           )
         `)
+        .eq("telegram_id", telegramId)
         .order("acquired_at", { ascending: false });
 
       if (error) throw error;
@@ -84,11 +81,10 @@ const Inventory = () => {
     }
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      if (!telegramId) throw new Error("Not authenticated");
 
       const { error } = await supabase.from("redemptions").insert({
-        user_id: user.id,
+        telegram_id: telegramId,
         card_id: selectedCard.card_id,
         inventory_id: selectedCard.id,
         shipping_address: shippingAddress,
@@ -112,12 +108,15 @@ const Inventory = () => {
     }
   };
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="container mx-auto px-4 py-8">
-          <p className="text-center text-muted-foreground">Loading inventory...</p>
+          <div className="text-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="text-muted-foreground">Loading your collection...</p>
+          </div>
         </div>
       </div>
     );

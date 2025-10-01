@@ -1,148 +1,173 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
-import { MysteryBox } from "@/components/MysteryBox";
+import { GachaMachine } from "@/components/GachaMachine";
 import { PokemonCard } from "@/components/PokemonCard";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useTelegramAuth } from "@/hooks/useTelegramAuth";
 import charizardImg from "@/assets/charizard.jpg";
 import pikachuImg from "@/assets/pikachu.jpg";
 import mewtwoImg from "@/assets/mewtwo.jpg";
 import eeveeImg from "@/assets/eevee.jpg";
 
 const Index = () => {
-  const [isOpening, setIsOpening] = useState(false);
+  const [isDrawing, setIsDrawing] = useState(false);
   const [revealedCard, setRevealedCard] = useState<any>(null);
-  const navigate = useNavigate();
+  const [normalBoxId, setNormalBoxId] = useState<string>("");
+  const [premiumBoxId, setPremiumBoxId] = useState<string>("");
   const { toast } = useToast();
+  const { telegramId, isLoading } = useTelegramAuth();
 
   useEffect(() => {
-    checkAuth();
+    fetchBoxes();
   }, []);
 
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/auth");
+  const fetchBoxes = async () => {
+    const { data, error } = await supabase
+      .from("boxes")
+      .select("*")
+      .eq("active", true);
+
+    if (error) {
+      console.error("Error fetching boxes:", error);
+      return;
+    }
+
+    if (data) {
+      const normalBox = data.find((box) => box.box_type === "normal");
+      const premiumBox = data.find((box) => box.box_type === "premium");
+
+      if (normalBox) setNormalBoxId(normalBox.id);
+      if (premiumBox) setPremiumBoxId(premiumBox.id);
     }
   };
 
-  const handleOpenBox = async () => {
-    setIsOpening(true);
-    
+  const handleDrawCard = async (boxId: string) => {
+    if (!telegramId) {
+      toast({
+        title: "Error",
+        description: "Telegram user not authenticated",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsDrawing(true);
+
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      // Call the database function to draw a card
+      const { data, error } = await supabase.rpc("draw_from_gacha", {
+        p_box_id: boxId,
+        p_telegram_id: telegramId,
+      });
 
-      // Get all cards
-      const { data: cards, error: cardsError } = await supabase
-        .from("cards")
-        .select("*");
+      if (error) throw error;
 
-      if (cardsError) throw cardsError;
-
-      // Get box configuration
-      const { data: boxes, error: boxError } = await supabase
-        .from("boxes")
-        .select("*")
-        .eq("active", true)
-        .single();
-
-      if (boxError) throw boxError;
-
-      // Calculate random card based on rarity
-      const rand = Math.random() * 100;
-      let selectedRarity: "legendary" | "epic" | "rare" | "common";
-      
-      if (rand < boxes.legendary_odds) {
-        selectedRarity = "legendary";
-      } else if (rand < boxes.legendary_odds + boxes.epic_odds) {
-        selectedRarity = "epic";
-      } else if (rand < boxes.legendary_odds + boxes.epic_odds + boxes.rare_odds) {
-        selectedRarity = "rare";
-      } else {
-        selectedRarity = "common";
+      if (!data || data.length === 0) {
+        throw new Error("No cards available in this machine");
       }
 
-      const cardsOfRarity = cards?.filter(c => c.rarity === selectedRarity) || [];
-      const randomCard = cardsOfRarity[Math.floor(Math.random() * cardsOfRarity.length)];
-
-      if (!randomCard) throw new Error("No cards available");
-
-      // Add card to inventory
-      const { error: inventoryError } = await supabase
-        .from("inventory")
-        .insert({
-          user_id: user.id,
-          card_id: randomCard.id,
-        });
-
-      if (inventoryError) throw inventoryError;
-
-      // Record transaction
-      const { error: transactionError } = await supabase
-        .from("transactions")
-        .insert({
-          user_id: user.id,
-          transaction_type: "box_purchase",
-          amount: boxes.price,
-          card_id: randomCard.id,
-        });
-
-      if (transactionError) throw transactionError;
+      const drawnCard = data[0];
 
       // Map image URLs to imported images
       const imageMap: Record<string, string> = {
-        "/placeholder.svg": selectedRarity === "legendary" ? charizardImg :
-                           selectedRarity === "epic" ? pikachuImg :
-                           selectedRarity === "rare" ? mewtwoImg : eeveeImg
+        "/placeholder.svg":
+          drawnCard.card_rarity === "legendary"
+            ? charizardImg
+            : drawnCard.card_rarity === "epic"
+            ? pikachuImg
+            : drawnCard.card_rarity === "rare"
+            ? mewtwoImg
+            : eeveeImg,
       };
 
+      // Simulate vending machine delay
       setTimeout(() => {
         setRevealedCard({
-          ...randomCard,
-          image_url: imageMap[randomCard.image_url] || randomCard.image_url
+          id: drawnCard.card_id,
+          name: drawnCard.card_name,
+          rarity: drawnCard.card_rarity,
+          image_url: imageMap[drawnCard.card_image] || drawnCard.card_image,
+          estimated_value: drawnCard.card_value,
         });
-        setIsOpening(false);
-      }, 1500);
-
+        setIsDrawing(false);
+      }, 2000);
     } catch (error: any) {
       toast({
         title: "Error",
         description: error.message,
         variant: "destructive",
       });
-      setIsOpening(false);
+      setIsDrawing(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-8 md:py-12">
         <div className="space-y-8">
+          {/* Header */}
           <div className="text-center space-y-4">
-            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              Open Mystery Boxes
+            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              🎰 Gacha Machines
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Collect rare Pokémon cards with TON. Each box contains a mystery card with different rarities!
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+              Draw rare Pokémon cards from our gacha machines! Each machine has visible inventory and limited stock!
             </p>
           </div>
 
-          <MysteryBox onOpen={handleOpenBox} isOpening={isOpening} />
+          {/* Gacha Machines Grid */}
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8">
+            {normalBoxId && (
+              <GachaMachine
+                boxId={normalBoxId}
+                type="normal"
+                priceUSDT={50}
+                onDraw={() => handleDrawCard(normalBoxId)}
+                isDrawing={isDrawing}
+              />
+            )}
+            {premiumBoxId && (
+              <GachaMachine
+                boxId={premiumBoxId}
+                type="premium"
+                priceUSDT={150}
+                onDraw={() => handleDrawCard(premiumBoxId)}
+                isDrawing={isDrawing}
+              />
+            )}
+          </div>
         </div>
       </div>
 
+      {/* Card Reveal Dialog */}
       <Dialog open={!!revealedCard} onOpenChange={() => setRevealedCard(null)}>
         <DialogContent className="bg-gradient-card border-border max-w-md">
-          <div className="space-y-4 py-4">
-            <h2 className="text-3xl font-bold text-center bg-gradient-primary bg-clip-text text-transparent">
-              You got a card!
-            </h2>
+          <div className="space-y-6 py-4">
+            <div className="text-center space-y-2">
+              <div className="text-6xl animate-drop">🎉</div>
+              <h2 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent animate-drop">
+                You Got a Card!
+              </h2>
+              <p className="text-muted-foreground animate-fade-in">
+                Added to your inventory
+              </p>
+            </div>
             {revealedCard && (
-              <div className="animate-flip">
+              <div className="animate-drop">
                 <PokemonCard
                   name={revealedCard.name}
                   rarity={revealedCard.rarity}
