@@ -35,6 +35,27 @@ export const GachaMachine = ({ boxId, type, priceUSDT, onDraw, isDrawing }: Gach
 
   useEffect(() => {
     fetchMachineInventory();
+
+    // Subscribe to real-time inventory updates
+    const channel = supabase
+      .channel(`machine-inventory-${boxId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'machine_inventory',
+          filter: `box_id=eq.${boxId}`
+        },
+        () => {
+          fetchMachineInventory();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [boxId]);
 
   const fetchMachineInventory = async () => {
