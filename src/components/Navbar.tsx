@@ -20,14 +20,7 @@ export const Navbar = () => {
   return (
     <nav className="border-b border-border bg-card/50 backdrop-blur-lg sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <Gift className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              PigeonHole
-            </span>
-          </Link>
-
+        <div className="flex items-center justify-center">
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" onClick={() => navigate("/")}>
               <Gift className="h-4 w-4 mr-2" />
@@ -40,10 +33,6 @@ export const Navbar = () => {
             <Button variant="ghost" size="sm" onClick={() => navigate("/admin")}>
               <Settings className="h-4 w-4 mr-2" />
               Admin
-            </Button>
-            <Button variant="ghost" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
             </Button>
           </div>
         </div>
