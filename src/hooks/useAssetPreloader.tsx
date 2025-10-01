@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import gachaVideo from '@/assets/gacha-video.webm';
-import legendaryVideo from '@/assets/legendary-video.webm';
+import gachaVideo from '@/assets/gacha-video.mp4';
+import legendaryVideo from '@/assets/legendary-video.mp4';
 import charizardImg from '@/assets/charizard.jpg';
 import eeveeImg from '@/assets/eevee.jpg';
 import mewtwoImg from '@/assets/mewtwo.jpg';

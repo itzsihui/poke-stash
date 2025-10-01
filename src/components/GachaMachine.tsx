@@ -4,8 +4,8 @@ import { Card } from "@/components/ui/card";
 import { PokemonCard } from "./PokemonCard";
 import { supabase } from "@/integrations/supabase/client";
 import { Sparkles, Loader2 } from "lucide-react";
-import gachaVideo from "@/assets/gacha-video.webm";
-import legendaryVideo from "@/assets/legendary-video.webm";
+import gachaVideo from "@/assets/gacha-video.mp4";
+import legendaryVideo from "@/assets/legendary-video.mp4";
 import { resolveCardImage } from "@/lib/imageResolver";
 
 interface GachaMachineCard {
