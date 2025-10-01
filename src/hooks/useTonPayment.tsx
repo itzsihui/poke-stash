@@ -19,11 +19,6 @@ export const useTonPayment = () => {
       }
 
       const amountNano = (BigInt(Math.floor(amountTon * 1e9))).toString();
-      
-      toast({
-        title: "Payment Processing",
-        description: `Sending ${amountTon} TON to smart contract...`,
-      });
 
       const transaction = await tonConnectUI.sendTransaction({
         validUntil: Math.floor(Date.now() / 1000) + 300,
@@ -36,8 +31,7 @@ export const useTonPayment = () => {
       });
 
       toast({
-        title: "Payment Successful",
-        description: `${amountTon} TON sent successfully!`,
+        title: "Payment sent",
       });
 
       return transaction;
