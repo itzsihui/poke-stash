@@ -26,7 +26,7 @@ export const AssetPreloader = ({ onComplete }: AssetPreloaderProps) => {
           <img 
             src={gachaIcon} 
             alt="Gacha Machine" 
-            className="w-32 h-32 mx-auto animate-float"
+            className="w-32 h-auto mx-auto animate-float object-contain"
           />
           <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
             Gacha Machine

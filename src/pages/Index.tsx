@@ -159,7 +159,7 @@ const Index = () => {
           {/* Header */}
           <div className="text-center space-y-4">
             <h1 className="text-4xl md:text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent flex items-center justify-center gap-4">
-              <img src={gachaIcon} alt="Gacha" className="w-12 h-12 md:w-16 md:h-16 inline-block" />
+              <img src={gachaIcon} alt="Gacha" className="w-12 h-auto md:w-16 md:h-auto inline-block object-contain" />
               Gacha Machine
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
