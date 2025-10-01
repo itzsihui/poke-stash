@@ -229,7 +229,7 @@ const Index = () => {
 
           {/* Recent Draws Section */}
           <div className="mt-12">
-            <RecentDraws />
+            <RecentDraws boxType={isPremium ? "premium" : "normal"} />
           </div>
         </div>
       </div>

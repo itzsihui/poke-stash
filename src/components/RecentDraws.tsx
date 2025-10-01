@@ -14,15 +14,24 @@ interface RecentDraw {
   acquired_at: string;
 }
 
-export const RecentDraws = () => {
+interface RecentDrawsProps {
+  boxType: "normal" | "premium";
+}
+
+export const RecentDraws = ({ boxType }: RecentDrawsProps) => {
   const [recentDraws, setRecentDraws] = useState<RecentDraw[]>([]);
 
   useEffect(() => {
     fetchRecentDraws();
     
+    // Auto-refresh every 30 seconds
+    const refreshInterval = setInterval(() => {
+      fetchRecentDraws();
+    }, 30000);
+    
     // Subscribe to real-time updates
     const channel = supabase
-      .channel('recent-draws')
+      .channel(`recent-draws-${boxType}`)
       .on(
         'postgres_changes',
         {
@@ -37,9 +46,10 @@ export const RecentDraws = () => {
       .subscribe();
 
     return () => {
+      clearInterval(refreshInterval);
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [boxType]);
 
   const fetchRecentDraws = async () => {
     const { data, error } = await supabase
@@ -48,13 +58,15 @@ export const RecentDraws = () => {
         id,
         telegram_id,
         acquired_at,
-        cards (
+        cards!inner (
           name,
           rarity,
           image_url,
-          estimated_value
+          estimated_value,
+          box_type
         )
       `)
+      .eq("cards.box_type", boxType)
       .order("acquired_at", { ascending: false })
       .limit(12);
 
@@ -98,10 +110,10 @@ export const RecentDraws = () => {
     <div className="w-full space-y-6">
       <div className="text-center">
         <h2 className="text-2xl md:text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-          Recent Draws
+          Recent {boxType === "premium" ? "Premium" : "Normal"} Draws
         </h2>
         <p className="text-muted-foreground mt-2">
-          See what others are pulling!
+          See what others are pulling from the {boxType} gacha!
         </p>
       </div>
 
