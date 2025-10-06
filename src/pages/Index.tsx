@@ -77,19 +77,12 @@ const Index = () => {
       // Determine gacha type based on box ID
       const gachaType = pendingBoxId === premiumBoxId ? "premium" : "normal";
       
-      // Send Telegram Stars invoice
+      // Open Stars invoice inside Mini App and wait for status
       const result = await sendStarsPayment(gachaType);
       
       if (result.success) {
-        // Show instruction to complete payment in Telegram
-        toast({
-          title: "Payment Required",
-          description: "Please complete the payment in your Telegram chat, then return here to draw your card!",
-          duration: 10000,
-        });
-        
-        // Don't proceed with card draw yet - wait for payment completion
-        // The card draw will happen when the bot processes the successful payment
+        // Immediately proceed with the real draw using existing logic
+        await processCardDraw(pendingBoxId);
       }
     } catch (error) {
       console.error("Payment failed:", error);
