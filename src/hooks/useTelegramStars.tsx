@@ -98,7 +98,7 @@ export const useTelegramStars = () => {
         try {
           webAppAny.openInvoice(invoiceUrl, (status: string) => {
             if (status === 'paid') {
-              toast({ title: 'Payment Successful!' });
+              toast({ title: 'Payment Successful!', duration: 2000 });
               resolve({ success: true, starsAmount });
             } else if (status === 'cancelled') {
               reject(new Error('Payment cancelled'));
