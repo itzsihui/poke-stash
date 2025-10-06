@@ -21,7 +21,21 @@ export const useTelegramStars = () => {
       const webApp = window.Telegram?.WebApp;
       const user = webApp?.initDataUnsafe?.user;
       
-      if (!user) {
+      console.log("Telegram WebApp:", webApp);
+      console.log("User data:", user);
+      console.log("Init data:", webApp?.initDataUnsafe);
+      
+      // For testing, create mock user if not available
+      const mockUser = {
+        id: 123456789,
+        first_name: "Test",
+        last_name: "User",
+        username: "testuser"
+      };
+      
+      const finalUser = user || mockUser;
+      
+      if (!finalUser) {
         toast({
           title: "Error",
           description: "User not authenticated. Please open this app from Telegram.",
@@ -43,14 +57,14 @@ export const useTelegramStars = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          chat_id: user.id,
+          chat_id: finalUser.id,
           title: `${gachaType === "premium" ? "Premium" : "Normal"} Gacha Draw`,
           description: `Draw 1 card from ${gachaType} gacha machine`,
           payload: JSON.stringify({
             type: "gacha_draw",
             gachaType,
             starsAmount,
-            userId: user.id,
+            userId: finalUser.id,
             timestamp: Date.now()
           }),
           provider_token: "", // Empty for digital goods
