@@ -10,6 +10,10 @@ export const STAR_PRICES = {
 const BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN || 'YOUR_BOT_TOKEN_HERE';
 const BOT_API_URL = `https://api.telegram.org/bot${BOT_TOKEN}`;
 
+// Payment mode: 'stars' (XTR) or 'redsys' (EUR test)
+const PAYMENT_MODE = (import.meta.env.VITE_PAYMENT_MODE || 'stars').toLowerCase();
+const REDSYS_TEST_TOKEN = import.meta.env.VITE_REDSYS_TEST_TOKEN || '';
+
 export const useTelegramStars = () => {
   const { toast } = useToast();
 
@@ -63,15 +67,17 @@ export const useTelegramStars = () => {
           payload: JSON.stringify({
             type: "gacha_draw",
             gachaType,
-            starsAmount,
+            amount: PAYMENT_MODE === 'stars' ? starsAmount : (gachaType === 'premium' ? 1000 : 500), // cents for EUR when Redsys
+            currency: PAYMENT_MODE === 'stars' ? 'XTR' : 'EUR',
             userId: finalUser.id,
+            mode: PAYMENT_MODE,
             timestamp: Date.now()
           }),
-          provider_token: "", // Empty for digital goods
-          currency: "XTR", // Telegram Stars
+          provider_token: PAYMENT_MODE === 'stars' ? "" : REDSYS_TEST_TOKEN,
+          currency: PAYMENT_MODE === 'stars' ? "XTR" : "EUR",
           prices: [{
             label: `${gachaType === "premium" ? "Premium" : "Normal"} Gacha Draw`,
-            amount: starsAmount
+            amount: PAYMENT_MODE === 'stars' ? starsAmount : (gachaType === 'premium' ? 1000 : 500) // 10€ premium, 5€ normal by default
           }]
         })
       });
