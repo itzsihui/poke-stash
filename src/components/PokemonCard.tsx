@@ -39,7 +39,7 @@ export const PokemonCard = ({
         </div>
         {showValue && estimatedValue !== undefined && (
           <p className="text-sm text-muted-foreground">
-            Est. Value: {estimatedValue} TONS
+            Est. Value: ⭐ {Math.round(estimatedValue * 33)} Stars
           </p>
         )}
       </div>

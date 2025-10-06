@@ -138,7 +138,7 @@ const Admin = () => {
                 <DollarSign className="h-4 w-4 text-primary" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-foreground">{stats.totalRevenue.toFixed(2)} TONS</div>
+                <div className="text-2xl font-bold text-foreground">⭐ {stats.totalRevenue.toFixed(0)} Stars</div>
               </CardContent>
             </Card>
 
@@ -194,7 +194,7 @@ const Admin = () => {
                           {redemption.status}
                         </Badge>
                       </TableCell>
-                      <TableCell>{redemption.delivery_fee} TONS</TableCell>
+                      <TableCell>⭐ {redemption.delivery_fee} Stars</TableCell>
                       <TableCell className="max-w-xs truncate">
                         {redemption.shipping_address}
                       </TableCell>

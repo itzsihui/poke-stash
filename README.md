@@ -1,8 +1,8 @@
-# 🎉 Welcome to **Pullemon** — Gotta *Pull* ’Em All!
+# 🎉 Welcome to **Pullemon** — Gotta *Pull* 'Em All!
 
-Bringing real-world Pokémon collectibles **onchain** through mystery box magic.
+Bringing real-world Pokémon collectibles through mystery box magic.
 
-Built as a **Telegram Mini App** on the **TON Network** — no apps to install, no wallets to configure. Just tap, pull, and flex!
+Built as a **Telegram Mini App** with **Telegram Stars** — no apps to install, no wallets to configure. Just tap, pull, and flex!
 
 ---
 
@@ -34,8 +34,8 @@ Instant dopamine. Tangible value.
 
 | Step | Action | Result |
 |------|--------|--------|
-| 1️⃣ | Tap **"Draw"** | Spend TON to draw a card from the gacha machine |
-| 2️⃣ | 🎴 Reveal | Get a *graded Pokémon card NFT* |
+| 1️⃣ | Tap **"Draw"** | Spend Telegram Stars to draw a card from the gacha machine |
+| 2️⃣ | 🎴 Reveal | Get a *graded Pokémon card* |
 | 3️⃣ | 🚚 Redeem | Trade or **request physical delivery** |
 
 
@@ -44,8 +44,17 @@ Instant dopamine. Tangible value.
 ## ✅ Trust & Authenticity
 
 - All prizes are **professionally graded slabs** (PSA, BGS, CGC)
-- NFTs act as **proof of ownership**
+- Digital records act as **proof of ownership**
 - **Future features:** trading, marketplace, flex wall
+
+---
+
+## 💰 Pricing
+
+- **Normal Gacha**: ⭐ 50 Stars (~$1.50)
+- **Premium Gacha**: ⭐ 100 Stars (~$3.00)
+- **Hit Rate**: 1% chance for $100+ cards
+- **Expected Value**: ~$150 average to hit premium cards
 
 ---
 
@@ -53,6 +62,7 @@ Instant dopamine. Tangible value.
 
 - 100% inside **Telegram**
 - No crypto knowledge needed
+- Pay with **Telegram Stars** (built-in currency)
 - Flex. Brag. Repeat.
 
 ---

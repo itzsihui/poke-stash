@@ -94,7 +94,7 @@ const Inventory = () => {
 
       toast({
         title: "Redemption requested!",
-        description: "Your card will be shipped soon. Delivery fee: 75 TONS",
+        description: "Your card will be shipped soon. Delivery fee: 2500 Stars",
       });
       setSelectedCard(null);
       setShippingAddress("");
@@ -166,7 +166,7 @@ const Inventory = () => {
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold">Redeem Physical Card</DialogTitle>
             <DialogDescription>
-              Request delivery of {selectedCard?.cards.name}. Delivery fee: 75 TONS
+              Request delivery of {selectedCard?.cards.name}. Delivery fee: 2500 Stars
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">

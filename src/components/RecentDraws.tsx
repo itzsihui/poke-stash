@@ -101,9 +101,9 @@ export const RecentDraws = ({ boxType }: RecentDrawsProps) => {
     return formatDistanceToNow(new Date(date), { addSuffix: true });
   };
 
-  const convertToTON = (usdValue: number) => {
-    // Convert USD to TON (approximate rate: 1 USD ≈ 0.17 TON based on typical TON prices)
-    return (usdValue * 0.17).toFixed(2);
+  const convertToStars = (usdValue: number) => {
+    // Convert USD to Stars (approximate rate: 1 USD ≈ 33 Stars)
+    return (usdValue * 33).toFixed(0);
   };
 
   return (
@@ -156,7 +156,7 @@ export const RecentDraws = ({ boxType }: RecentDrawsProps) => {
                     {getTimeAgo(draw.acquired_at)}
                   </p>
                   <p className="text-xs font-bold text-primary">
-                    {convertToTON(draw.card_value)} TON
+                    ⭐ {convertToStars(draw.card_value)} Stars
                   </p>
                 </div>
               </div>
