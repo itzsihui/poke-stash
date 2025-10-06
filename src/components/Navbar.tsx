@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Gift, Package, Settings, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { TonConnectButton } from "@/components/TonConnectButton";
 
 export const Navbar = () => {
   const navigate = useNavigate();
@@ -36,8 +35,8 @@ export const Navbar = () => {
               Admin
             </Button>
           </div>
-          <div className="shrink-0 max-w-[200px] overflow-hidden">
-            <TonConnectButton />
+          <div className="shrink-0">
+            <span className="text-sm text-muted-foreground">⭐ Telegram Stars</span>
           </div>
         </div>
       </div>

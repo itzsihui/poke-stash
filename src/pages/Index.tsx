@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useTelegramAuth } from "@/hooks/useTelegramAuth";
-import { useTonPayment } from "@/hooks/useTonPayment";
+import { useTelegramStars } from "@/hooks/useTelegramStars";
 import { RecentDraws } from "@/components/RecentDraws";
 import charizardImg from "@/assets/charizard.jpg";
 import pikachuImg from "@/assets/pikachu.jpg";
@@ -27,9 +27,7 @@ const Index = () => {
   const [pendingBoxId, setPendingBoxId] = useState<string>("");
   const { toast } = useToast();
   const { telegramId, isLoading } = useTelegramAuth();
-  const { sendTonPayment, isConnected } = useTonPayment();
-
-  const TON_AMOUNT = 0.001;
+  const { sendStarsPayment, starPrices } = useTelegramStars();
 
   useEffect(() => {
     fetchBoxes();
@@ -65,14 +63,7 @@ const Index = () => {
       return;
     }
 
-    if (!isConnected) {
-      toast({
-        title: "Wallet Not Connected",
-        description: "Please connect your TON wallet to continue",
-        variant: "destructive",
-      });
-      return;
-    }
+    // No need to check wallet connection for Telegram Stars
 
     setPendingBoxId(boxId);
     setShowPaymentDialog(true);
@@ -82,14 +73,17 @@ const Index = () => {
     setShowPaymentDialog(false);
     
     try {
-      // Send real TON payment to smart contract
-      await sendTonPayment(TON_AMOUNT);
+      // Determine gacha type based on box ID
+      const gachaType = pendingBoxId === premiumBoxId ? "premium" : "normal";
+      
+      // Send Telegram Stars payment
+      await sendStarsPayment(gachaType);
       
       // Proceed with card draw after successful payment
       await processCardDraw(pendingBoxId);
     } catch (error) {
       console.error("Payment failed:", error);
-      // Error toast is already shown in useTonPayment hook
+      // Error toast is already shown in useTelegramStars hook
     }
   };
 
@@ -199,7 +193,7 @@ const Index = () => {
                 <GachaMachine
                   boxId={premiumBoxId}
                   type="premium"
-                  priceUSDT={150}
+                  priceStars={starPrices.premium}
                   onDraw={() => handleDrawCard(premiumBoxId)}
                   isDrawing={isDrawing}
                 />
@@ -215,7 +209,7 @@ const Index = () => {
                 <GachaMachine
                   boxId={normalBoxId}
                   type="normal"
-                  priceUSDT={50}
+                  priceStars={starPrices.normal}
                   onDraw={() => handleDrawCard(normalBoxId)}
                   isDrawing={isDrawing}
                 />
@@ -242,7 +236,7 @@ const Index = () => {
         onOpenChange={setShowPaymentDialog}
         onConfirm={handlePaymentConfirm}
         gachaType={isPremium ? "premium" : "normal"}
-        tonAmount={TON_AMOUNT}
+        starsAmount={isPremium ? starPrices.premium : starPrices.normal}
       />
 
       {/* Card Reveal Dialog */}

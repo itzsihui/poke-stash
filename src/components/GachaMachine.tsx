@@ -20,18 +20,15 @@ interface GachaMachineCard {
 interface GachaMachineProps {
   boxId: string;
   type: "normal" | "premium";
-  priceUSDT: number;
+  priceStars: number;
   onDraw: () => void;
   isDrawing: boolean;
 }
 
-export const GachaMachine = ({ boxId, type, priceUSDT, onDraw, isDrawing }: GachaMachineProps) => {
+export const GachaMachine = ({ boxId, type, priceStars, onDraw, isDrawing }: GachaMachineProps) => {
   const [cards, setCards] = useState<GachaMachineCard[]>([]);
   const [totalStock, setTotalStock] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-
-  // Mock TON conversion rate (1 USDT = ~2 TON for example)
-  const tonPrice = (priceUSDT * 2).toFixed(0);
 
   useEffect(() => {
     fetchMachineInventory();
@@ -120,8 +117,10 @@ export const GachaMachine = ({ boxId, type, priceUSDT, onDraw, isDrawing }: Gach
           {type === "premium" ? "💎 Premium" : "⭐ Normal"} Gacha
         </h2>
         <div className="space-y-1 relative z-10">
-          <p className="text-2xl font-bold">{priceUSDT} USDT</p>
-          <p className="text-lg text-muted-foreground">≈ {tonPrice} TON</p>
+          <p className="text-2xl font-bold">⭐ {priceStars} Stars</p>
+          <p className="text-lg text-muted-foreground">
+            ≈ ${(priceStars * 0.03).toFixed(2)} USD
+          </p>
           <p className="text-sm text-muted-foreground">
             <span className={totalStock < 10 ? "text-destructive font-bold animate-pulse" : ""}>
               {totalStock} cards remaining

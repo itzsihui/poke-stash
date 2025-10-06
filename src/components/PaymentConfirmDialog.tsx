@@ -14,7 +14,7 @@ interface PaymentConfirmDialogProps {
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
   gachaType: "normal" | "premium";
-  tonAmount: number;
+    starsAmount: number;
 }
 
 export const PaymentConfirmDialog = ({
@@ -22,7 +22,7 @@ export const PaymentConfirmDialog = ({
   onOpenChange,
   onConfirm,
   gachaType,
-  tonAmount,
+  starsAmount,
 }: PaymentConfirmDialogProps) => {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -35,7 +35,7 @@ export const PaymentConfirmDialog = ({
             <div className="space-y-2">
               <p className="text-muted-foreground">Cost:</p>
               <p className="text-3xl font-bold text-primary">
-                {tonAmount} TON
+                ⭐ {starsAmount} Stars
               </p>
             </div>
           </AlertDialogDescription>
