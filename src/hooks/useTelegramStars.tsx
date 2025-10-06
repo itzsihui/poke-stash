@@ -67,10 +67,8 @@ export const useTelegramStars = () => {
           payload: JSON.stringify({
             type: "gacha_draw",
             gachaType,
-            amount: PAYMENT_MODE === 'stars' ? starsAmount : (gachaType === 'premium' ? 1000 : 500), // cents for EUR when Redsys
-            currency: PAYMENT_MODE === 'stars' ? 'XTR' : 'EUR',
+            starsAmount,
             userId: finalUser.id,
-            mode: PAYMENT_MODE,
             timestamp: Date.now()
           }),
           provider_token: PAYMENT_MODE === 'stars' ? "" : REDSYS_TEST_TOKEN,
