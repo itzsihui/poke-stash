@@ -6,8 +6,9 @@ export const STAR_PRICES = {
   premium: 100  // 100 stars for premium gacha
 } as const;
 
-// Bot API endpoint - you'll need to replace this with your actual bot token
-const BOT_API_URL = import.meta.env.VITE_TELEGRAM_BOT_API_URL || 'https://api.telegram.org/bot';
+// Bot API endpoint for pokestash_bot
+const BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN || 'YOUR_BOT_TOKEN_HERE';
+const BOT_API_URL = `https://api.telegram.org/bot${BOT_TOKEN}`;
 
 export const useTelegramStars = () => {
   const { toast } = useToast();
@@ -16,61 +17,68 @@ export const useTelegramStars = () => {
     try {
       const starsAmount = STAR_PRICES[gachaType];
       
-      // Check if we're in Telegram WebApp environment
-      const isTelegramEnv = window.Telegram?.WebApp;
-      const isDevMode = import.meta.env.DEV;
-      
-      console.log("Telegram WebApp detected:", !!isTelegramEnv);
-      console.log("Development mode:", isDevMode);
-      console.log("Window.Telegram:", window.Telegram);
-      
-      // Allow testing in development mode even without Telegram WebApp
-      if (!isTelegramEnv && !isDevMode) {
-        toast({
-          title: "Error",
-          description: "This app must be used within Telegram",
-          variant: "destructive",
-        });
-        throw new Error("Not in Telegram environment");
-      }
-
+      // Get user info from Telegram WebApp
       const webApp = window.Telegram?.WebApp;
       const user = webApp?.initDataUnsafe?.user;
-
-      // In development mode, simulate user data if not available
-      const mockUser = isDevMode && !user ? {
-        id: 123456789,
-        first_name: "Test",
-        last_name: "User",
-        username: "testuser",
-        is_premium: true
-      } : user;
-
-      if (!mockUser && !isDevMode) {
+      
+      if (!user) {
         toast({
           title: "Error",
-          description: "User not authenticated",
+          description: "User not authenticated. Please open this app from Telegram.",
           variant: "destructive",
         });
         throw new Error("User not authenticated");
       }
 
-      // Show payment simulation message
+      // Show payment processing message
       toast({
-        title: isDevMode ? "Development Mode" : "Payment Processing",
-        description: `Processing ${starsAmount} stars payment for ${gachaType} gacha`,
+        title: "Creating Invoice",
+        description: `Creating ${starsAmount} stars invoice for ${gachaType} gacha`,
       });
 
-      // Simulate payment processing delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Simulate successful payment
-      toast({
-        title: "Payment Successful!",
-        description: `${starsAmount} stars deducted for ${gachaType} gacha draw`,
+      // Create invoice via bot API
+      const invoiceResponse = await fetch(`${BOT_API_URL}/sendInvoice`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chat_id: user.id,
+          title: `${gachaType === "premium" ? "Premium" : "Normal"} Gacha Draw`,
+          description: `Draw 1 card from ${gachaType} gacha machine`,
+          payload: JSON.stringify({
+            type: "gacha_draw",
+            gachaType,
+            starsAmount,
+            userId: user.id,
+            timestamp: Date.now()
+          }),
+          provider_token: "", // Empty for digital goods
+          currency: "XTR", // Telegram Stars
+          prices: [{
+            label: `${gachaType === "premium" ? "Premium" : "Normal"} Gacha Draw`,
+            amount: starsAmount
+          }]
+        })
       });
 
-      return { success: true, starsAmount };
+      if (!invoiceResponse.ok) {
+        const errorData = await invoiceResponse.json();
+        throw new Error(errorData.description || 'Failed to create invoice');
+      }
+
+      const invoiceData = await invoiceResponse.json();
+      
+      if (!invoiceData.ok) {
+        throw new Error(invoiceData.description || 'Failed to create invoice');
+      }
+
+      toast({
+        title: "Invoice Sent!",
+        description: "Check your Telegram chat to complete the payment",
+      });
+
+      return { success: true, starsAmount, invoiceId: invoiceData.result.message_id };
 
     } catch (error: any) {
       console.error("Telegram Stars payment error:", error);

@@ -83,9 +83,10 @@ const sendInvoice = async (chatId, starsAmount, gachaType) => {
 
 Add to your `.env` file:
 ```env
-VITE_TELEGRAM_BOT_API_URL=https://api.telegram.org/bot
-VITE_TELEGRAM_BOT_TOKEN=your_bot_token_here
+VITE_TELEGRAM_BOT_TOKEN=your_pokestash_bot_token_here
 ```
+
+**Important**: Replace `your_pokestash_bot_token_here` with your actual bot token from @BotFather.
 
 ## 4. Testing
 
