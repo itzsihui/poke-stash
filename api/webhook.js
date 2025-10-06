@@ -15,8 +15,7 @@ export default async function handler(req, res) {
     return;
   }
 
-  // ACK ASAP to avoid BOT_PRECHECKOUT_TIMEOUT
-  res.status(200).end();
+  // Don't end response yet; we will answer pre_checkout first, then end
 
   try {
     const update = req.body || {};
@@ -31,16 +30,23 @@ export default async function handler(req, res) {
     // Pre-checkout must be answered within 10s
     if (update.pre_checkout_query) {
       await answerPreCheckout(update.pre_checkout_query);
+      // End after answering precheckout to avoid serverless freezing before fetch completes
+      res.status(200).end();
       return;
     }
 
-    // Successful payment → fulfill
+    // Successful payment → fulfill (async), then end
     if (update.message && update.message.successful_payment) {
-      await handleSuccessfulPayment(update.message);
+      handleSuccessfulPayment(update.message).catch((e) => console.error('fulfillment error', e));
+      res.status(200).end();
       return;
     }
+
+    // Default OK for other updates
+    res.status(200).end();
   } catch (e) {
     console.error('Webhook error:', e);
+    try { res.status(200).end(); } catch {}
   }
 }
 
