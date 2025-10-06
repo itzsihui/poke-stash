@@ -50,14 +50,13 @@ export const useTelegramStars = () => {
         description: `Creating ${starsAmount} stars invoice for ${gachaType} gacha`,
       });
 
-      // Create Stars (XTR) invoice via Bot API
-      const invoiceResponse = await fetch(`${BOT_API_URL}/sendInvoice`, {
+      // Create Stars (XTR) invoice link via Bot API
+      const invoiceResponse = await fetch(`${BOT_API_URL}/createInvoiceLink`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          chat_id: finalUser.id,
           title: `${gachaType === "premium" ? "Premium" : "Normal"} Gacha Draw`,
           description: `Draw 1 card from ${gachaType} gacha machine`,
           payload: JSON.stringify({
@@ -83,16 +82,37 @@ export const useTelegramStars = () => {
 
       const invoiceData = await invoiceResponse.json();
       
-      if (!invoiceData.ok) {
-        throw new Error(invoiceData.description || 'Failed to create invoice');
+      if (!invoiceData.ok || !invoiceData.result) {
+        throw new Error(invoiceData.description || 'Failed to create invoice link');
       }
 
-      toast({
-        title: "Invoice Sent!",
-        description: "Check your Telegram chat to complete the payment",
-      });
+      const invoiceUrl: string = invoiceData.result;
 
-      return { success: true, starsAmount, invoiceId: invoiceData.result.message_id };
+      // Open invoice inside the Mini App and wait for the result
+      const webAppAny: any = window.Telegram?.WebApp as any;
+      if (!webAppAny || typeof webAppAny.openInvoice !== 'function') {
+        throw new Error('Telegram WebApp.openInvoice not available');
+      }
+
+      return await new Promise<{ success: boolean; starsAmount: number }>((resolve, reject) => {
+        try {
+          webAppAny.openInvoice(invoiceUrl, (status: string) => {
+            if (status === 'paid') {
+              toast({ title: 'Payment Successful!' });
+              resolve({ success: true, starsAmount });
+            } else if (status === 'cancelled') {
+              reject(new Error('Payment cancelled'));
+            } else if (status === 'failed') {
+              reject(new Error('Payment failed'));
+            } else {
+              // pending or unknown status
+              reject(new Error(`Payment status: ${status}`));
+            }
+          });
+        } catch (e: any) {
+          reject(e);
+        }
+      });
 
     } catch (error: any) {
       console.error("Telegram Stars payment error:", error);
