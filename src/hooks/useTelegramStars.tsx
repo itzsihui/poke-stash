@@ -97,7 +97,7 @@ export const useTelegramStars = () => {
     }
     
     // Telegram doesn't expose exact star balance, but we can check if user is premium
-    return webApp.initDataUnsafe?.user?.is_premium ? 1000 : 500; // Mock balance
+    return (webApp.initDataUnsafe?.user as any)?.is_premium ? 1000 : 500; // Mock balance
   };
 
   return {
@@ -107,26 +107,3 @@ export const useTelegramStars = () => {
   };
 };
 
-// Extend Window interface for Telegram WebApp
-declare global {
-  interface Window {
-    Telegram?: {
-      WebApp: {
-        initDataUnsafe?: {
-          user?: {
-            id: number;
-            is_premium?: boolean;
-            first_name?: string;
-            last_name?: string;
-            username?: string;
-            language_code?: string;
-          };
-        };
-        showInvoice: (invoice: any, callback: (status: string) => void) => void;
-        ready: () => void;
-        expand: () => void;
-        close: () => void;
-      };
-    };
-  }
-}
