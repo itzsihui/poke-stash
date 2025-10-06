@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTelegramAuth } from "@/hooks/useTelegramAuth";
 import { useTelegramStars } from "@/hooks/useTelegramStars";
 import { RecentDraws } from "@/components/RecentDraws";
+import { TelegramDebug } from "@/components/TelegramDebug";
 import charizardImg from "@/assets/charizard.jpg";
 import pikachuImg from "@/assets/pikachu.jpg";
 import mewtwoImg from "@/assets/mewtwo.jpg";
@@ -151,6 +152,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <TelegramDebug />
       <div className="container mx-auto px-4 py-8 md:py-12">
         <div className="space-y-8">
           {/* Header */}
