@@ -20,6 +20,13 @@ export default async function handler(req, res) {
 
   try {
     const update = req.body || {};
+    // Debug logs to verify runtime
+    try {
+      console.log('[webhook] TOKEN set:', !!BOT_TOKEN,
+        'keys:', Object.keys(update || {}),
+        'has pre_checkout_query:', !!update.pre_checkout_query,
+        'has successful_payment:', !!(update.message && update.message.successful_payment));
+    } catch {}
 
     // Pre-checkout must be answered within 10s
     if (update.pre_checkout_query) {
