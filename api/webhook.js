@@ -49,15 +49,20 @@ async function answerPreCheckout(preCheckoutQuery) {
     const payload = safeParse(preCheckoutQuery.invoice_payload);
     const isGacha = payload?.type === 'gacha_draw';
 
-    await fetch(API('answerPreCheckoutQuery'), {
+    console.log('[precheckout] answering ok:', !!isGacha, 'id:', preCheckoutQuery.id);
+
+    const resp = await fetch(API('answerPreCheckoutQuery'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         pre_checkout_query_id: preCheckoutQuery.id,
-        ok: !!isGacha,
-        error_message: isGacha ? undefined : 'Invalid order type'
+        ok: !!isGacha
       })
     });
+
+    let bodyText = '';
+    try { bodyText = await resp.text(); } catch {}
+    console.log('[precheckout] status:', resp.status, 'body:', bodyText);
   } catch (e) {
     console.error('answerPreCheckoutQuery failed:', e);
   }
