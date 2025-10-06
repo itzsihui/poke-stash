@@ -1,95 +1,89 @@
 // Example webhook handler for pokestash_bot
-// Add this to your bot's webhook endpoint
+// Production note: deploy behind HTTPS, keep process warm
 
 const express = require('express');
+const fetch = require('node-fetch');
 const app = express();
 
 app.use(express.json());
 
-// Your bot token
-const BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE';
+// Bot token via env
+const BOT_TOKEN = process.env.BOT_TOKEN || 'YOUR_BOT_TOKEN_HERE';
+const API = (method) => `https://api.telegram.org/bot${BOT_TOKEN}/${method}`;
 
 // Handle webhook updates
 app.post('/webhook', async (req, res) => {
+  // ACK ASAP to avoid BOT_PRECHECKOUT_TIMEOUT
+  res.status(200).end();
+
   const update = req.body;
-  
+
   try {
-    // Handle pre-checkout query
+    // 1) Pre-checkout must be answered within 10s
     if (update.pre_checkout_query) {
       await handlePreCheckoutQuery(update.pre_checkout_query);
+      return;
     }
-    
-    // Handle successful payment
+
+    // 2) Successful payment → fulfill order
     if (update.message?.successful_payment) {
       await handleSuccessfulPayment(update.message);
+      return;
     }
-    
-    res.status(200).send('OK');
   } catch (error) {
-    console.error('Webhook error:', error);
-    res.status(500).send('Error');
+    console.error('Webhook handling error:', error);
   }
 });
 
 // Handle pre-checkout query
 async function handlePreCheckoutQuery(query) {
-  const payload = JSON.parse(query.invoice_payload);
-  
-  // Validate the order
-  if (payload.type === 'gacha_draw') {
-    // Approve the payment
-    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerPreCheckoutQuery`, {
+  try {
+    const payload = safeParse(query.invoice_payload);
+    const isGacha = payload?.type === 'gacha_draw';
+
+    // Approve quickly (add your own stock/capacity checks if needed)
+    await fetch(API('answerPreCheckoutQuery'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         pre_checkout_query_id: query.id,
-        ok: true
+        ok: !!isGacha,
+        error_message: isGacha ? undefined : 'Invalid order type'
       })
     });
-  } else {
-    // Reject unknown orders
-    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerPreCheckoutQuery`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        pre_checkout_query_id: query.id,
-        ok: false,
-        error_message: 'Invalid order type'
-      })
-    });
+  } catch (e) {
+    console.error('answerPreCheckoutQuery failed:', e);
   }
 }
 
 // Handle successful payment
 async function handleSuccessfulPayment(message) {
   const payment = message.successful_payment;
-  const payload = JSON.parse(payment.invoice_payload);
-  
-  if (payload.type === 'gacha_draw') {
-    // Process the gacha draw
-    const { gachaType, starsAmount, userId } = payload;
-    
-    // Call your existing gacha draw function
-    // This should integrate with your existing database
-    const drawnCard = await processGachaDraw(payload.userId, gachaType);
-    
-    // Send the result to the user
-    await sendMessage(userId, `🎉 You drew: ${drawnCard.name} (${drawnCard.rarity})!`);
-    
-    // Store the payment record
-    await storePaymentRecord({
-      userId,
-      gachaType,
-      starsAmount,
-      cardId: drawnCard.id,
-      paymentId: payment.telegram_payment_charge_id
-    });
-  }
+  const payload = safeParse(payment.invoice_payload);
+  if (payload?.type !== 'gacha_draw') return;
+
+  const { gachaType, starsAmount } = payload;
+  const userId = message.from?.id || payload.userId;
+
+  // Perform draw (replace mock with your DB call)
+  const drawnCard = await processGachaDraw(userId, gachaType);
+
+  // Notify user
+  await sendMessage(userId, `🎉 You drew: ${drawnCard.name} (${drawnCard.rarity})!`);
+
+  // Persist
+  await storePaymentRecord({
+    userId,
+    gachaType,
+    starsAmount,
+    cardId: drawnCard.id,
+    paymentId: payment.telegram_payment_charge_id
+  });
 }
 
 // Helper function to send message
 async function sendMessage(chatId, text) {
-  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+  await fetch(API('sendMessage'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -120,6 +114,11 @@ async function storePaymentRecord(record) {
   console.log('Payment record:', record);
 }
 
-app.listen(3000, () => {
-  console.log('Bot webhook server running on port 3000');
+function safeParse(str) {
+  try { return JSON.parse(str); } catch { return null; }
+}
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Bot webhook server running on port ${PORT}`);
 });
