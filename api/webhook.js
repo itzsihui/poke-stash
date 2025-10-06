@@ -86,7 +86,7 @@ async function handleSuccessfulPayment(message) {
   // TODO: integrate with your DB: perform draw_from_gacha and persist
   const drawnCard = await mockDraw(gachaType);
 
-  await sendMessage(userId, `🎉 You drew: ${drawnCard.name} (${drawnCard.rarity})!`);
+  await sendMessage(userId, `🎉 You drew a card! Check your inventory to see it.`);
 
   // Persist record (replace with DB insert)
   console.log('Payment record', {
@@ -112,13 +112,6 @@ async function sendMessage(chatId, text) {
 
 function safeParse(str) {
   try { return JSON.parse(str); } catch { return null; }
-}
-
-async function mockDraw(gachaType) {
-  // Replace with real draw logic (Supabase RPC)
-  return gachaType === 'premium'
-    ? { id: 'card_charizard', name: 'Charizard', rarity: 'legendary' }
-    : { id: 'card_pikachu', name: 'Pikachu', rarity: 'rare' };
 }
 
 

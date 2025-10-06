@@ -2,8 +2,8 @@ import { useToast } from '@/hooks/use-toast';
 
 // Telegram Stars pricing
 export const STAR_PRICES = {
-  normal: 50,   // 50 stars for normal gacha
-  premium: 100  // 100 stars for premium gacha
+  normal: 1,    // 1 star for normal gacha
+  premium: 2  // 100 stars for premium gacha
 } as const;
 
 // Bot API endpoint for pokestash_bot
