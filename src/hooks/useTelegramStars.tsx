@@ -6,9 +6,7 @@ export const STAR_PRICES = {
   premium: 2  // 100 stars for premium gacha
 } as const;
 
-// Bot API endpoint for pokestash_bot
-const BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN || 'YOUR_BOT_TOKEN_HERE';
-const BOT_API_URL = `https://api.telegram.org/bot${BOT_TOKEN}`;
+// Bot token is now handled by backend endpoints
 
 export const useTelegramStars = () => {
   const { toast } = useToast();
@@ -50,8 +48,8 @@ export const useTelegramStars = () => {
         description: `Creating ${starsAmount} stars invoice for ${gachaType} gacha`,
       });
 
-      // Create Stars (XTR) invoice link via Bot API
-      const invoiceResponse = await fetch(`${BOT_API_URL}/createInvoiceLink`, {
+      // Create Stars (XTR) invoice link via our backend proxy
+      const invoiceResponse = await fetch('/api/create-invoice', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
